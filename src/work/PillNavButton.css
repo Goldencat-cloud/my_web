@@ -1,0 +1,44 @@
+.pill-nav-btn {
+  --x: 50%;
+  --y: 50%;
+}
+
+/* 第二层：延迟的浅波，营造“波浪”感 */
+.pill-nav-wave,
+.pill-nav-fill {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 260%;
+  padding-bottom: 260%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pill-nav-wave {
+  background: rgba(233, 213, 168, 0.08);
+  transition-delay: 0.05s;
+}
+
+.pill-nav-fill {
+  background: rgba(233, 213, 168, 0.16);
+  transition-delay: 0s;
+}
+
+.pill-nav-btn:hover .pill-nav-wave,
+.pill-nav-btn[data-active='true'] .pill-nav-wave {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pill-nav-btn:hover .pill-nav-fill,
+.pill-nav-btn[data-active='true'] .pill-nav-fill {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Active 状态：填充更实，并带微弱持续辉光 */
+.pill-nav-btn[data-active='true'] .pill-nav-fill {
+  background: rgba(233, 213, 168, 0.22);
+  box-shadow: 0 0 24px rgba(233, 213, 168, 0.18);
+}

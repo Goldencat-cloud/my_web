@@ -1,0 +1,1365 @@
+/* ==========================================================================
+  InternshipSection · IDE 代码日志版
+  ──────────────────────────────────────────────────────────────────────────
+  视觉叙事:
+    整个板块像「数据工程师的代码编辑器」——顶部窗口壳(标题栏 + 路径),
+    左侧文件树(5 个 log 文件名),右侧代码编辑区(一次看一幕)。
+    点击文件 / 键盘 ←→ 切换,当前文件高亮 + 呼吸运行光标。
+  设计语言延续(守整体风格):
+    深沉克制的高级暗色调:古铜金 + 孔雀绿青,撞色克制,
+    底色近乎纯黑,对比度高,整体冷静、贵气。
+  ========================================================================== */
+
+:root {
+  /* 主色:古铜金(沉稳,不再过亮) — 全局暖金主导 */
+  --internship-gold: #d8b26a;
+  --internship-gold-bright: #e8cf96;
+  --internship-gold-soft: #b08c4e;
+  --internship-gold-deep: #6e5530;
+  --internship-gold-glow: rgba(216, 178, 106, 0.4);
+  /* 辅色:孔雀绿青(只做极小面积冷色呼吸点缀,收敛饱和度) */
+  --internship-teal: #5fd0b2;
+  --internship-teal-bright: #82dcc4;
+  --internship-teal-soft: #a9e6d4;
+  --internship-teal-dim: #2b6250;
+  --internship-teal-glow: rgba(95, 208, 178, 0.28);
+  /* 中性色:统一在暖棕灰系,拉开明度层级(深色页面背景上的文字) */
+  --internship-ink: #f0e6d4;   /* 页面正文主色:暖白 */
+  --internship-ink-soft: #d8cbb0; /* 页面次级文字 */
+  --internship-faint: #9c8b68; /* 弱信息:灰棕 */
+  --internship-faint-dim: #6b5d44; /* 更弱:状态栏 */
+  /* IDE 窗口专属(浅色主题):米白暖灰渐变,与深棕页面背景拉开对比 */
+  --ide-bg-top: #f7f1e4;
+  --ide-bg-bottom: #efe6d2;
+  --ide-bg-files: #f3ecdc;
+  --ide-bg-bar: #fbf7ec;
+  --ide-bg-foot: #efe8d8;
+  --ide-ink: #3a2c18;      /* IDE 正文:深棕 */
+  --ide-ink-dim: #6e5530;  /* IDE 次级文字 */
+  --ide-ink-faint: #9c8b68; /* IDE 弱信息 */
+  --ide-line: rgba(176, 140, 78, 0.28); /* IDE 分隔/边框线 */
+  --ide-ink-teal: #2a7a63; /* IDE 内青色文字(小点缀) */
+  /* 底色:深暗近黑,微暖 — 页面背景保持不变 */
+  --internship-bg: #0d0a06;
+  --internship-bg-soft: #1a1308;
+  --internship-bg-deep: #050402;
+  --internship-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ─── 入场动画 ──────────────────────────────────────────────────────── */
+/* 软件打开感:从中心放大浮现,带一点弹性过冲,配合轻微上浮 */
+@keyframes win-in {
+  0%   { opacity: 0; transform: translateY(18px) scale(0.82); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.03); }
+  80%  { transform: translateY(2px) scale(0.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* 窗口顶部金线从中间向两侧扫开(像窗口标题栏被"拉开") */
+@keyframes win-sweep {
+  0%   { transform: scaleX(0); opacity: 0; }
+  35%  { opacity: 0.9; }
+  70%  { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+/* 内部区块依次淡入(活动栏/文件树/编辑区 → 终端 → 状态栏) */
+@keyframes win-section-in {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes marker-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 公司铭牌:3D 翻入(像奖牌被立起来呈现) */
+@keyframes company-in {
+  0%   { opacity: 0; transform: perspective(900px) rotateX(30deg) translateY(18px) scale(0.94); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes editor-in {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes cursor-blink {
+  0%, 45%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes ec-blink {
+  0%, 55%   { opacity: 1; }
+  60%, 100% { opacity: 0; }
+}
+
+/* ==========================================================================
+   ─── Stage 总容器 ───────────────────────────────────────────────────────
+   ========================================================================== */
+
+.internship-stage {
+  position: relative;
+  width: 100%;
+  padding: 0 6px;
+  isolation: isolate;
+}
+
+/* ── 顶部板块头:eyebrow + 书法体标题 + 副标题(居中) ── */
+.internship-head {
+  text-align: center;
+}
+.head-title {
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+.head-tagline {
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8F7E63;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.head-tagline::before,
+.head-tagline::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.32), transparent);
+  vertical-align: middle;
+  margin: 0 14px;
+}
+
+/* ── 顶部 eyebrow:小而有锚点 ── */
+.page-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--internship-ink-soft);
+  animation: marker-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.page-eyebrow-mark {
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--internship-gold) 0%, transparent 100%);
+  box-shadow: 0 0 6px var(--internship-gold-glow);
+}
+.page-eyebrow-num {
+  font-family: var(--internship-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--internship-gold-bright);
+  font-variant-numeric: tabular-nums;
+}
+.page-eyebrow-tail {
+  color: var(--internship-faint);
+}
+
+/* ==========================================================================
+   ─── 公司信息条(正常排版·一行平级,原则 2) ────────────────────────────────
+   公司 / 部门 / 岗位 / 时间 一行平级,公司字体略突出但不过分。
+   ========================================================================== */
+
+.internship-company {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 6px 20px;
+  margin: 0 0 20px;
+  padding: 14px 26px;
+  border: 1px solid rgba(232, 207, 150, 0.6);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse 60% 130% at 0% 0%, rgba(216, 178, 106, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 110% at 100% 100%, rgba(95, 208, 178, 0.07) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(44, 30, 15, 0.94) 0%, rgba(26, 17, 8, 0.96) 100%);
+  box-shadow:
+    0 0 0 1px rgba(176, 140, 78, 0.32),
+    0 0 26px rgba(216, 178, 106, 0.22),
+    0 22px 46px rgba(0, 0, 0, 0.5),
+    0 10px 22px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 235, 190, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: company-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+/* 悬浮:铭牌被"拿起",金光增强 */
+.internship-company:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px rgba(176, 140, 78, 0.4),
+    0 0 34px rgba(216, 178, 106, 0.3),
+    0 26px 54px rgba(0, 0, 0, 0.55),
+    0 12px 26px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 235, 190, 0.34),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55);
+}
+/* 顶部金色高光线:强化上边缘 */
+.internship-company::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 235, 190, 0.6), transparent);
+  pointer-events: none;
+}
+.co-name {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.co-sep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* 立体感:柔光投影 + 轻微的立体悬浮 */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 5px rgba(216, 178, 106, 0.35));
+  transform: translateY(-0.5px);
+}
+.co-sep svg {
+  display: block;
+}
+.co-item,
+.co-role,
+.co-date,
+.co-name {
+  white-space: nowrap;
+}
+.co-item {
+  /* 部门:优雅衬线体,亮金 + 加粗(信息层级第一) */
+  font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #f0e6d4;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px rgba(232, 207, 150, 0.3);
+}
+/* 岗位/时间:次级柔和金,与部门同字号但降一级明度 */
+.co-role,
+.co-date {
+  font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #d8cbb0;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   ─── 编辑器窗口壳 ───────────────────────────────────────────────────────
+   顶部标题栏:三个金色圆点 + 路径 my_web/internship_log.py
+   边缘金边 + 暖金/teal 皮肤,不用冷灰(守整体风格)
+   ========================================================================== */
+
+.internship-window {
+  position: relative;
+  border: 1px solid rgba(216, 178, 106, 0.5);
+  border-top: 3px solid var(--internship-gold);
+  border-radius: 10px 10px 12px 12px;
+  background:
+    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(216, 178, 106, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, var(--ide-bg-top) 0%, var(--ide-bg-bottom) 100%);
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.45),
+    0 10px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  opacity: 1;
+}
+/* 滚动到该板块(active)时,播放"软件打开"入场动画 */
+.internship-window.is-active {
+  animation: win-in 0.55s cubic-bezier(0.34, 1.4, 0.44, 1) both;
+}
+/* 顶部金线扫开:窗口"拉开"的第一帧 */
+.internship-window.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f2dd9e, #d8b26a 50%, #f2dd9e);
+  transform-origin: center;
+  animation: win-sweep 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── 窗口标题栏 ── */
+.win-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ide-line);
+  background: linear-gradient(180deg, var(--ide-bg-bar) 0%, var(--ide-bg-top) 100%);
+}
+.internship-window.is-active .win-bar {
+  animation: win-section-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+.win-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.win-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+.win-dots .dot-1 { background: radial-gradient(circle at 30% 30%, #d8b26a, #c49a52 65%, #8a6a33); }
+.win-dots .dot-2 { background: radial-gradient(circle at 30% 30%, #a9e6d4, #5fd0b2 65%, #2b6250); }
+.win-dots .dot-3 { background: radial-gradient(circle at 30% 30%, #d8b26a, #b08c4e 65%, #6e5530); }
+.win-path {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--internship-mono);
+  font-size: 12px;
+  color: var(--internship-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.win-path svg { color: #b08c4e; opacity: 0.7; flex-shrink: 0; }
+.win-path-folder { color: #b08c4e; }
+.win-path-slash { color: rgba(176, 140, 78, 0.6); }
+.win-path-file { color: #3a8f78; font-weight: 600; }
+.win-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 4px 9px;
+  border: 1px solid rgba(176, 140, 78, 0.4);
+  border-radius: 4px;
+  background: rgba(216, 178, 106, 0.12);
+  font-family: var(--internship-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.win-counter b { color: #6e5530; font-weight: 700; }
+.win-counter i { font-style: normal; color: #b08c4e; font-size: 10px; padding: 0 1px; }
+/* 右上角关闭 ×:悬停变红,模拟真实 IDE 窗口关闭按钮 */
+.win-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 4px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #8a6a33;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+.win-close:hover {
+  background: rgba(216, 178, 106, 0.28);
+  color: #a0392b;
+  opacity: 1;
+}
+.win-close:active { transform: scale(0.92); }
+
+/* ── 窗口主体:左活动栏 + 文件树 + 右内容区 ── */
+.win-body {
+  display: grid;
+  grid-template-columns: 38px minmax(190px, 0.32fr) 1fr;
+  min-height: 300px;
+}
+.internship-window.is-active .win-body {
+  animation: win-section-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* ==========================================================================
+   ─── 活动栏(最左,VSCode 风格:窄竖条 + 一列图标 + 角标) ───────────────────
+   视觉上像一列「抽屉」按钮,激活时高亮并出现右侧窄条
+   ========================================================================== */
+.win-activity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  background: linear-gradient(180deg, #e9dec5 0%, #e0d4b6 100%);
+  border-right: 1px solid var(--ide-line);
+}
+.act-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: #7d6b49;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.18s ease;
+}
+.act-btn:hover {
+  color: #4a3517;
+  opacity: 1;
+}
+.act-btn.is-active {
+  color: #4a3517;
+  opacity: 1;
+}
+/* 激活时左侧出现 2px 暖金窄条,完全 VSCode 风格 */
+.act-btn.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(180deg, #d8b26a, #8a6a33);
+  border-radius: 0 1px 1px 0;
+  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+}
+/* 激活时图标背景轻染 */
+.act-btn.is-active::after {
+  content: '';
+  position: absolute;
+  inset: 4px 4px 4px 6px;
+  background: rgba(216, 178, 106, 0.18);
+  border-radius: 4px;
+  z-index: -1;
+}
+/* 角标(源码管理未提交数) */
+.act-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #6e5530, #4a3517);
+  color: #f4e8c8;
+  font-family: var(--internship-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================================
+   ─── 文件区(左,纵向 5 行,IDE 文件树) ────────────────────────────────────
+   只写文件名,当前行高亮 + 右侧呼吸光标 ▊
+   ========================================================================== */
+
+.win-files {
+  border-right: 1px solid var(--ide-line);
+  background:
+    radial-gradient(ellipse 80% 50% at 0% 0%, rgba(216, 178, 106, 0.1) 0%, transparent 60%),
+    var(--ide-bg-files);
+  padding: 6px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ─── 资源管理器标题栏(BYTEDANCE 大写小字 + 右侧三个点) ─── */
+.files-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.files-section-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px 6px 16px;
+  font-family: var(--internship-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #7d6b49;
+  text-transform: uppercase;
+  user-select: none;
+}
+.files-section-title {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+.files-section-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.5;
+}
+.files-section-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ─── 父文件夹行(展开的 chevron-down + 文件夹名) ─── */
+.files-section-folder {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px 4px 12px;
+  font-family: var(--internship-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5a4218;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+.files-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: #8a6a33;
+  opacity: 0.85;
+  transition: transform 0.18s ease;
+}
+.files-chevron-down {
+  /* 默认 chevron-down(指下),表示已展开 */
+  transform: rotate(0deg);
+}
+.files-folder-name {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── 文件行(VSCode 风格:带树状缩进线) ─── */
+.file-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 5px 10px 5px 4px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--internship-mono);
+  font-size: 12.5px;
+  color: #7d6b49;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+/* 树状缩进线:左侧一根 1px 暖色虚线,模拟 IDE 文件树层级 */
+.file-row-indent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 16px;
+  flex-shrink: 0;
+  position: relative;
+}
+.indent-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(176, 140, 78, 0.45) 25%,
+    rgba(176, 140, 78, 0.45) 75%,
+    transparent 100%
+  );
+  transform: translateX(-0.5px);
+}
+.file-row:hover {
+  background: rgba(216, 178, 106, 0.18);
+  color: #6e5530;
+}
+.file-row.is-active {
+  background: linear-gradient(90deg, rgba(216, 178, 106, 0.32) 0%, rgba(216, 178, 106, 0.08) 100%);
+  color: #4a3517;
+  box-shadow: inset 3px 0 0 rgba(176, 140, 78, 0.9);
+}
+.file-row.is-active .file-row-name {
+  color: #5a4218;
+}
+/* 文件类型颜色:深青绿(0,2,4)/深红(1)/深紫(3)—— 4 种文件类型各不同 */
+.file-row-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+.file-row:nth-child(odd) .file-row-icon { color: #3a8f78; }   /* Python 绿 */
+.file-row:nth-child(even) .file-row-icon { color: #a07a3a; }  /* 数据/配置棕金 */
+.file-row:nth-child(3) .file-row-icon { color: #9b6b3a; }
+.file-row:nth-child(5) .file-row-icon { color: #5a7a6a; }
+.file-row.is-active .file-row-icon { color: #b08c4e; opacity: 1; }
+.file-row-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 关闭 ×(hover 时可见) */
+.file-row-close {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: #8a6a33;
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
+}
+.file-row:hover .file-row-close { opacity: 0.7; }
+.file-row-close:hover { background: rgba(176, 140, 78, 0.25); opacity: 1; }
+/* 运行光标 ▊:当前行右侧呼吸闪烁 */
+.file-row-cursor {
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #b08c4e, #6e5530);
+  box-shadow: 0 0 8px rgba(176, 140, 78, 0.5);
+  animation: cursor-blink 1.05s steps(1) infinite;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   ─── 内容区(右) ─────────────────────────────────────────────────────────
+   串场命令 → 分隔 → 标题(稍大编号 + 书法体) → eyebrow → 徽章 → 正文
+   ========================================================================== */
+
+.win-content {
+  min-width: 0;
+  padding: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+}
+.win-editor {
+  animation: editor-in 0.46s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+  padding: 22px 30px 0;
+}
+
+/* ==========================================================================
+   ─── 编辑器标签栏(VSCode 风格:多个 tab 并排,当前 active 高亮) ──────────
+   ========================================================================== */
+.editor-tabs {
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(180deg, #ede3cc 0%, #e6d9bd 100%);
+  border-bottom: 1px solid var(--ide-line);
+  height: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.editor-tabs::-webkit-scrollbar { display: none; }
+.editor-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 0 12px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #8a6a33;
+  font-family: var(--internship-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  border-right: 1px solid rgba(176, 140, 78, 0.18);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.editor-tab:hover {
+  background: rgba(216, 178, 106, 0.18);
+  color: #5a4218;
+}
+.editor-tab.is-active {
+  background: linear-gradient(180deg, #f7f1e4 0%, #f0e7d0 100%);
+  color: #4a3517;
+  font-weight: 600;
+}
+/* active tab 上方 1px 暖金高光线 */
+.editor-tab.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #b08c4e, #d8b26a 50%, #b08c4e);
+  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+}
+.editor-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+.editor-tab-icon-0 { color: #3a8f78; }   /* Python 绿 */
+.editor-tab-icon-1 { color: #a07a3a; }   /* 模板棕金 */
+.editor-tab-icon-2 { color: #5a7a6a; }   /* 调度青 */
+.editor-tab-icon-3 { color: #9b6b3a; }   /* QA 红棕 */
+.editor-tab-name {
+  white-space: nowrap;
+}
+.editor-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.55;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.editor-tab-close:hover { background: rgba(176, 140, 78, 0.25); opacity: 1; }
+.editor-tab.is-active .editor-tab-close { opacity: 0.85; }
+.editor-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 100%;
+  color: #8a6a33;
+  font-size: 16px;
+  font-weight: 300;
+  opacity: 0.7;
+  cursor: pointer;
+  user-select: none;
+  border-right: none;
+}
+.editor-tab-add:hover { color: #4a3517; opacity: 1; }
+
+/* ==========================================================================
+   ─── 面包屑(workspace › 目录 › 当前文件,带动作图标) ─────────────────────
+   ========================================================================== */
+.editor-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px 6px 30px;
+  background: linear-gradient(180deg, #f4ebd6 0%, #efe5cb 100%);
+  border-bottom: 1px solid rgba(176, 140, 78, 0.18);
+  font-family: var(--internship-mono);
+  font-size: 11px;
+  color: #7d6b49;
+  letter-spacing: 0.02em;
+}
+.bc-seg {
+  white-space: nowrap;
+  opacity: 0.85;
+}
+.bc-seg.bc-file {
+  color: #5a4218;
+  font-weight: 600;
+}
+.bc-chev {
+  color: rgba(176, 140, 78, 0.55);
+  font-size: 10px;
+  user-select: none;
+}
+.bc-spacer { flex: 1 1 auto; }
+.bc-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  color: #8a6a33;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.bc-icon:hover { background: rgba(216, 178, 106, 0.22); opacity: 1; }
+
+/* ==========================================================================
+   ─── 编辑器主体:左行号列 + 右内容列,两列 grid ──────────────────────────
+   左侧行号独立竖排、固定行高,营造代码编辑器行号区氛围(不必与右侧逐行
+   精确对齐,右侧内容正常纵向排列即可)。
+   ========================================================================== */
+.editor-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  margin-top: 8px;
+  gap: 0;
+}
+/* 行号与内容块之间的分隔竖线 */
+.editor-body::after {
+  content: '';
+  position: absolute;
+  left: 44px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(176, 140, 78, 0.22);
+  pointer-events: none;
+}
+/* 行号列:竖排,固定行高,撑满与内容列等高(grid stretch) */
+.editor-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  height: 100%;
+  padding: 6px 13px 6px 0;
+  overflow: hidden;
+  font-family: var(--internship-mono);
+  font-size: 11.5px;
+  color: #a07a3a;
+  opacity: 0.5;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+.gutter-line {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* ── 底部 IDE 终端:浅色面板(与浅色 IDE 统一),深棕文字 + 小面积青色点缀 ── */
+.editor-terminal {
+  margin: 18px 0 0;
+  background: linear-gradient(180deg, #ede3cc 0%, #e6d9bd 100%);
+  border-top: 1px solid var(--ide-line);
+  border-radius: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 2px 6px rgba(120, 96, 52, 0.08);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.internship-window.is-active .editor-terminal {
+  animation: win-section-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+/* 终端多 tab 容器 */
+.editor-terminal .term-tabs {
+  display: flex;
+  align-items: stretch;
+  height: 30px;
+  border-bottom: 1px solid rgba(176, 140, 78, 0.22);
+  background: linear-gradient(180deg, rgba(216, 178, 106, 0.12) 0%, transparent 100%);
+  font-family: var(--internship-mono);
+  font-size: 10.5px;
+  color: var(--ide-ink-dim);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.editor-terminal .term-tabs::-webkit-scrollbar { display: none; }
+.editor-terminal .term-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-right: 1px solid rgba(176, 140, 78, 0.18);
+  color: #8a6a33;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.editor-terminal .term-tab:hover {
+  background: rgba(216, 178, 106, 0.18);
+  color: #5a4218;
+}
+.editor-terminal .term-tab.is-active {
+  color: #4a3517;
+  background: linear-gradient(180deg, rgba(247, 241, 228, 0.6) 0%, transparent 100%);
+}
+.editor-terminal .term-tab.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #b08c4e, #d8b26a 50%, #b08c4e);
+  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+}
+.editor-terminal .term-tab-inactive { color: #a07a3a; opacity: 0.85; }
+.editor-terminal .term-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgba(176, 140, 78, 0.22);
+  color: #6e5530;
+  font-size: 9.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.editor-terminal .term-tabs-spacer { flex: 1 1 auto; }
+.editor-terminal .term-tabs-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  color: #8a6a33;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.editor-terminal .term-tabs-action:hover { opacity: 1; background: rgba(216, 178, 106, 0.18); }
+
+/* 兼容旧结构:term-header 现在退化为不可见(若有人在别处用) */
+.editor-terminal .term-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(176, 140, 78, 0.22);
+  background: linear-gradient(180deg, rgba(216, 178, 106, 0.14) 0%, transparent 100%);
+  font-family: var(--internship-mono);
+  font-size: 10.5px;
+  color: var(--ide-ink-dim);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.editor-terminal .term-header-icon {
+  display: inline-flex;
+  color: var(--ide-ink-teal);
+  opacity: 0.85;
+}
+.editor-terminal .term-header-title {
+  color: #6e5530;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.editor-terminal .term-header-close {
+  margin-left: auto;
+  color: var(--ide-ink-faint);
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.18s;
+}
+.editor-terminal .term-header-close:hover { color: var(--ide-ink-teal); }
+/* 终端命令行 */
+.editor-terminal .term-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  font-family: var(--internship-mono);
+  font-size: 13.5px;
+  color: var(--ide-ink);
+}
+.editor-terminal .term-prompt {
+  color: var(--ide-ink-teal);
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.editor-terminal .term-cmd {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  overflow: hidden;
+}
+.editor-terminal .term-cmd-static {
+  color: var(--ide-ink-dim);
+  opacity: 0.9;
+}
+.editor-terminal .term-cmd-file {
+  color: #6e5530;
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* 光标:内联竖线,紧跟在已敲出的字符后,敲字时静止、结束后闪烁 */
+.editor-terminal .term-cmd-file .term-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 15px;
+  margin-left: 1px;
+  vertical-align: -2px;
+  border-radius: 1px;
+  background: var(--ide-ink-teal);
+  box-shadow: 0 0 8px rgba(42, 122, 99, 0.6);
+  animation: ec-blink 0.9s steps(1) infinite;
+}
+.editor-terminal .term-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  color: var(--ide-ink-teal);
+}
+.editor-terminal .term-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ide-ink-teal);
+  box-shadow: 0 0 8px rgba(42, 122, 99, 0.6);
+  animation: term-dot 1.2s ease-in-out infinite;
+}
+/* 逐字敲出关键帧 */
+@keyframes term-type {
+  0%   { width: 0; }
+  100% { width: var(--term-w, 12ch); }
+}
+@keyframes term-dot {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+
+/* 内容列:独立正常纵向排列,与行号列等高(stretch) */
+.editor-content {
+  align-self: stretch;
+  min-width: 0;
+}
+/* 标题:稍大的金色编号 + 书法体标题(无 act 词) */
+.editor-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 0;
+  padding-left: 16px;
+}
+.editor-no {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: clamp(30px, 3.2vw, 40px);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #b8914f 0%, #8a6a33 45%, #5a4218 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.6));
+  user-select: none;
+}
+/* 分隔线 */
+.editor-divider {
+  height: 1px;
+  margin: 18px 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(176, 140, 78, 0.3) 18%,
+    rgba(110, 85, 48, 0.5) 50%,
+    rgba(176, 140, 78, 0.3) 82%,
+    transparent 100%
+  );
+}
+.editor-divider-short {
+  margin: 12px 0 18px;
+  padding-left: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(176, 140, 78, 0.6) 0%,
+    rgba(176, 140, 78, 0.15) 70%,
+    transparent 100%
+  );
+}
+/* 数据徽章行 */
+.editor-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding-left: 16px;
+}
+
+/* 正文:数据加粗高亮 */
+.editor-text {
+  font-size: 15px;
+  line-height: 1.86;
+  color: var(--ide-ink);
+  text-align: left;
+  max-width: 680px;
+  margin: 0;
+  padding-left: 16px;
+  padding-bottom: 8px;
+}
+.card-key {
+  color: #8a6a33;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   ─── 窗口底部:VSCode 风格状态栏(左/中/右三段,深暖色底 + 金边细分割) ──
+   ========================================================================== */
+
+.win-foot {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0;
+  gap: 0;
+  border-top: 1px solid var(--ide-line);
+  background: linear-gradient(180deg, #6e5530 0%, #4a3517 100%);
+  color: #f4e8c8;
+  font-family: var(--internship-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  min-height: 26px;
+}
+.internship-window.is-active .win-foot {
+  animation: win-section-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+/* 左侧:branch + sync + errors + warnings */
+.win-foot-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+}
+.win-foot-mid {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  justify-content: center;
+}
+.win-foot-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  justify-content: flex-end;
+}
+.foot-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  color: #f4e8c8;
+  cursor: default;
+  user-select: none;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+.foot-seg:hover { background: rgba(255, 255, 255, 0.08); }
+.foot-seg svg { flex-shrink: 0; opacity: 0.9; }
+.foot-sep {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 235, 190, 0.18);
+  flex-shrink: 0;
+}
+.foot-branch svg { color: #f4e8c8; }
+.foot-sync { font-variant-numeric: tabular-nums; }
+.foot-err svg { color: #d8b26a; }
+.foot-warn svg { color: #e8cf96; }
+.foot-lang svg { color: #f4e8c8; }
+.foot-bell { padding: 5px 10px; }
+
+/* 中间:步进点 + 键盘提示 */
+.foot-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.foot-marker-dot {
+  width: 8px;
+  height: 3px;
+  border-radius: 1.5px;
+  background: rgba(244, 232, 200, 0.4);
+  transition: all 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.foot-marker-dot.is-active {
+  width: 18px;
+  background: linear-gradient(90deg, #f4e8c8 0%, #d8b26a 50%, #f4e8c8 100%);
+  box-shadow: 0 0 6px rgba(244, 232, 200, 0.5);
+}
+.foot-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(244, 232, 200, 0.85);
+  text-transform: uppercase;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+}
+.foot-hint kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border: 1px solid rgba(244, 232, 200, 0.4);
+  background: rgba(0, 0, 0, 0.25);
+  color: #f4e8c8;
+  font-family: var(--internship-mono);
+  font-size: 9.5px;
+  border-radius: 3px;
+  font-style: normal;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.foot-pos { font-variant-numeric: tabular-nums; }
+.foot-indent { font-variant-numeric: tabular-nums; }
+.foot-enc, .foot-eol { font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   ─── 响应式 ─────────────────────────────────────────────────────────────
+   ========================================================================== */
+/* 中屏:进一步收紧字号/间距,公司条保持单行 */
+@media (max-width: 1440px) {
+  .internship-company {
+    gap: 5px 14px;
+    padding: 12px 20px;
+  }
+  .co-item { font-size: 13.5px; }
+  .co-role,
+  .co-date { font-size: 13px; }
+}
+
+@media (max-width: 980px) {
+  .win-body {
+    grid-template-columns: 32px minmax(140px, 0.32fr) 1fr;
+  }
+  .win-content { padding: 0; }
+  .win-editor { padding: 18px 18px 0; }
+  .editor-breadcrumb { padding: 6px 18px; }
+  .editor-no {
+    font-size: clamp(26px, 3vw, 34px);
+  }
+}
+
+@media (max-width: 720px) {
+  .head-tagline { margin-bottom: 12px; font-size: 11px; }
+  .head-tagline::before,
+  .head-tagline::after { display: none; }
+  .internship-company {
+    flex-wrap: wrap;
+    white-space: normal;
+    padding: 13px 16px;
+    gap: 4px 12px;
+    border-radius: 12px;
+  }
+  .co-item,
+  .co-role,
+  .co-date { font-size: 14px; }
+  /* 活动栏保留为竖排,文件区横排,内容区在下方 */
+  .win-body {
+    grid-template-columns: 1fr;
+  }
+  .win-activity {
+    flex-direction: row;
+    justify-content: center;
+    height: 36px;
+    border-right: none;
+    border-bottom: 1px solid var(--ide-line);
+    padding: 0 6px;
+  }
+  .act-btn { width: 36px; height: 100%; }
+  .act-btn.is-active::before {
+    left: 6px;
+    right: 6px;
+    top: auto;
+    bottom: 0;
+    height: 2px;
+    width: auto;
+    border-radius: 1px 1px 0 0;
+  }
+  .act-btn.is-active::after { inset: 6px; }
+  .win-files {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--ide-line);
+    padding: 4px 8px;
+    gap: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .files-section-head { display: none; }
+  .files-section-folder { display: none; }
+  .file-row {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .file-row-indent { display: none; }
+  .file-row.is-active {
+    box-shadow:
+      inset 0 -3px 0 rgba(176, 140, 78, 0.8),
+      inset 0 0 0 1px rgba(176, 140, 78, 0.25);
+  }
+  .file-row-cursor { height: 11px; }
+  .win-editor { padding: 16px 14px 0; }
+  .editor-breadcrumb { padding: 6px 14px; }
+  .editor-text { font-size: 14.5px; line-height: 1.78; }
+  .win-foot { font-size: 9.5px; }
+  .foot-seg { padding: 4px 6px; }
+  .win-foot-mid { display: none; }
+}
+
+/* ── 减少动效偏好 ── */
+@media (prefers-reduced-motion: reduce) {
+  .internship-window,
+  .internship-window *,
+  .internship-window *::before,
+  .internship-window *::after,
+  .internship-company,
+  .internship-head,
+  .page-eyebrow {
+    animation: none !important;
+    transition: none !important;
+  }
+}

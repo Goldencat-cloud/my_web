@@ -1,0 +1,80 @@
+/* ===== MagicCard：粒子星光 + 边框辉光 + 3D 倾斜 + 磁性 + 点击涟漪 ===== */
+
+.magic-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  background: rgba(36, 26, 16, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 300px;
+  --magic-glow-color: 226, 190, 120;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* 边框辉光：跟随鼠标位置的金色描边 */
+.magic-card--border-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 6px;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--magic-glow-color), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--magic-glow-color), calc(var(--glow-intensity) * 0.4)) 30%,
+    transparent 60%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.magic-card--border-glow:hover::after {
+  opacity: 0.75;
+}
+
+/* 整卡悬浮：更克制的上浮 + 金色辉光 */
+.magic-card--hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.42),
+    0 0 22px rgba(var(--magic-glow-color), 0.12);
+}
+
+/* 粒子层：元素动态由 JS 创建，仅定义通用定位/层级 */
+.magic-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 点击涟漪：动态创建 */
+.magic-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  background: radial-gradient(
+    circle,
+    rgba(var(--magic-glow-color), 0.4) 0%,
+    rgba(var(--magic-glow-color), 0.2) 30%,
+    transparent 70%
+  );
+}

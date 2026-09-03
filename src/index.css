@@ -1,1 +1,2040 @@
 @import "tailwindcss";
+
+@keyframes swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* 吊牌 3D 摆动（带动摆尾，更生动） */
+@keyframes badge-swing {
+  0%   { transform: rotate(-3.5deg) translateY(0); }
+  25%  { transform: rotate(1.5deg) translateY(-2px); }
+  50%  { transform: rotate(3.5deg) translateY(0); }
+  75%  { transform: rotate(-1.5deg) translateY(2px); }
+  100% { transform: rotate(-3.5deg) translateY(0); }
+}
+/* 拖拽松手后的惯性回弹 */
+@keyframes badge-restore {
+  from { transform: translate(0, 0) rotate(0deg); }
+  60%  { transform: translate(calc(var(--dx) * -0.06), calc(var(--dy) * -0.06)) rotate(calc(var(--dx) * -0.01deg)); }
+  to   { transform: translate(0, 0) rotate(0deg); }
+}
+/* 吊牌顶面（3D 厚度，暗金金属） */
+.badge-top {
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  top: -5px;
+  height: 6px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #4c3a22, #37291a);
+  transform: perspective(160px) rotateX(-24deg);
+  transform-origin: bottom center;
+}
+/* 吊牌底面（内凹阴影） */
+.badge-bottom {
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  bottom: -5px;
+  height: 6px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #6d5330, #4e3a1f);
+  transform: perspective(160px) rotateX(24deg);
+  transform-origin: top center;
+}
+/* 吊牌圆环（暗金金属环） */
+.badge-ring {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #8a6d3f, #4c3a20 62%, #332619);
+  box-shadow: inset 0 0 0 2px rgba(255, 224, 160, 0.25), 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* 页面背景：暗夜鎏金 + 顶部一缕蓝紫黑上下渐变点缀。
+   主体恢复暖棕黑基调；蓝紫只作为顶部少量渐变（蓝→紫→透明），向下渐隐融入深色。 */
+.app-bg {
+  background-color: #17110b;
+  background-image:
+    linear-gradient(180deg, rgba(118, 126, 226, 0.26) 0%, rgba(150, 116, 230, 0.14) 18%, transparent 34%),
+    radial-gradient(ellipse 130% 90% at 50% -12%, rgba(86, 60, 31, 0.55), transparent 62%),
+    radial-gradient(ellipse 100% 80% at 88% 108%, rgba(72, 50, 24, 0.5), transparent 66%),
+    radial-gradient(ellipse 80% 60% at 6% 96%, rgba(60, 42, 21, 0.42), transparent 60%),
+    linear-gradient(180deg, #16100a 0%, #1c140c 50%, #181109 100%);
+}
+
+/* ===== 玻璃拟态工具类（暗色底上浮起的金色毛玻璃） ===== */
+.glass-bar {
+  background: rgba(22, 15, 9, 0.62);
+  backdrop-filter: blur(18px) saturate(1.45);
+  -webkit-backdrop-filter: blur(18px) saturate(1.45);
+  border-bottom: 1px solid rgba(201, 169, 110, 0.22);
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.glass-card {
+  background: rgba(34, 24, 14, 0.55);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid rgba(201, 169, 110, 0.22);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ===== 顶部导航联系入口：圆形图标按钮 ===== */
+.nav-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  color: #c9b48d;
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  background: rgba(36, 26, 16, 0.6);
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+.nav-contact-btn:hover {
+  color: #f2e0b8;
+  border-color: rgba(201, 169, 110, 0.7);
+  box-shadow: 0 0 14px rgba(233, 213, 168, 0.3);
+  transform: translateY(-1px);
+}
+.nav-contact-btn-copied {
+  color: #8fe3a8;
+  border-color: rgba(126, 214, 152, 0.6);
+  box-shadow: 0 0 12px rgba(126, 214, 152, 0.25);
+}
+.nav-contact-btn-copied:hover {
+  color: #a5eab9;
+  border-color: rgba(126, 214, 152, 0.8);
+}
+
+/* ===== 内容区联系方式卡片：可点击信息行 ===== */
+/* ===== Work 页导航联系胶囊：醒目渐变 + 金边 + 内嵌图标圆 ===== */
+.nav-contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px 0 7px;
+  border-radius: 9999px;
+  color: #f2e0b8;
+  background: linear-gradient(135deg, rgba(88, 66, 38, 0.85), rgba(52, 38, 20, 0.9));
+  border: 1px solid rgba(201, 169, 110, 0.55);
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease,
+    color 0.3s ease;
+}
+.nav-contact-chip:hover {
+  color: #fff3d8;
+  border-color: rgba(201, 169, 110, 0.9);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(226, 190, 120, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+.nav-contact-chip:active {
+  transform: translateY(0) scale(0.97);
+}
+.nav-contact-chip-copied {
+  color: #8fe3a8;
+  border-color: rgba(126, 214, 152, 0.6);
+}
+.nav-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  color: #c9a96e;
+  background: rgba(24, 17, 10, 0.55);
+  border: 1px solid rgba(201, 169, 110, 0.35);
+}
+.nav-chip-label {
+  line-height: 1;
+}
+
+/* ===== 门帘转场：多段金黑渐变竖帘。
+     各段从底部逐条涌上覆盖，返回时从顶部逐条反向收走（stagger 顺序由 open 方向决定）。
+     每段竖向渐变：顶部鎏金、向下过渡到黑，呈现「上金下黑」的金黑质感 ===== */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  overflow: hidden;
+  pointer-events: none;
+}
+.curtain-open {
+  pointer-events: auto;
+}
+.curtain-strip {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #e9cf97 0%,
+    #c9a96e 22%,
+    #7c5f2e 45%,
+    #2a1f10 72%,
+    #0a0704 100%
+  );
+  border-right: 1px solid rgba(201, 169, 110, 0.2);
+  transform: translateY(101%);
+  transition: transform 0.28s cubic-bezier(0.72, 0, 0.28, 1);
+  will-change: transform;
+}
+/* 每段顶部高光，强化金色质感 */
+.curtain-strip::before {
+  content: '';
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffe9b8, transparent);
+}
+.curtain-open .curtain-strip {
+  transform: translateY(0);
+}
+.curtain-idle .curtain-strip {
+  transform: translateY(-101%);
+}
+
+/* ===== 首页背景：上下模糊纵深（中间清晰、上下虚化） ===== */
+/* 清晰背景层 */
+.app-bg-depth {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+/* 模糊纵深层：整体模糊，仅在上/下区域显示，中间透出清晰背景 */
+.app-bg-depth-blur {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: blur(16px) saturate(1.06);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 24%,
+    transparent 40%,
+    transparent 60%,
+    #000 76%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 24%,
+    transparent 40%,
+    transparent 60%,
+    #000 76%,
+    #000 100%
+  );
+}
+/* 中央焦点光晕：暗底上的暖金微光，聚焦视频卡片 */
+.app-bg-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 72% 58% at 50% 55%,
+    rgba(230, 199, 130, 0.14),
+    transparent 72%
+  );
+}
+
+/* ===== 视频卡片：悬浮立体（透视俯视 + 底部投影，悬停抬起） ===== */
+.video-wrap {
+  perspective: 1100px;
+}
+/* 浮雕圆角变量：亮色/暗色背景自动适配 */
+.video-frame {
+  --v-emboss-highlight: rgba(255, 255, 255, 0.16);
+  --v-emboss-shadow: rgba(0, 0, 0, 0.7);
+  --v-emboss-bottom: rgba(0, 0, 0, 0.6);
+
+  transform: rotateX(5deg);
+  transform-origin: center center;
+  will-change: transform;
+  box-shadow:
+    /* 外层悬浮投影 */
+    0 30px 70px rgba(0, 0, 0, 0.62),
+    0 16px 32px rgba(0, 0, 0, 0.4),
+    0 5px 12px rgba(0, 0, 0, 0.25),
+    /* 外描边 */
+    0 0 0 1.5px rgba(201, 169, 110, 0.3),
+    /* 浮雕内阴影：左上高光、右下暗部（加厚） */
+    inset 3px 3px 8px var(--v-emboss-highlight),
+    inset -5px -5px 16px var(--v-emboss-shadow),
+    /* 底部重点阴影：强调圆角倒角的厚度 */
+    inset 0 -14px 34px var(--v-emboss-bottom),
+    /* 左侧/右侧附加厚度，让圆角立体感更完整 */
+    inset -4px 0 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.video-wrap:hover .video-frame {
+  transform: rotateX(0deg) translateY(-12px);
+  box-shadow:
+    0 48px 100px rgba(0, 0, 0, 0.72),
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 6px 14px rgba(0, 0, 0, 0.3),
+    0 0 0 1.5px rgba(220, 185, 120, 0.45),
+    inset 3px 3px 8px var(--v-emboss-highlight),
+    inset -5px -5px 16px var(--v-emboss-shadow),
+    inset 0 -14px 34px var(--v-emboss-bottom),
+    inset -4px 0 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+/* 亮色背景适配：增强高光、减弱阴影，保持浮雕可见 */
+@media (prefers-color-scheme: light) {
+  .video-frame {
+    --v-emboss-highlight: rgba(255, 255, 255, 0.45);
+    --v-emboss-shadow: rgba(0, 0, 0, 0.34);
+    --v-emboss-bottom: rgba(0, 0, 0, 0.26);
+  }
+}
+/* 悬浮投影：模拟卡片离地的椭圆阴影 */
+.video-shadow {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: -5%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(55, 35, 12, 0.5),
+    transparent 68%
+  );
+  filter: blur(16px);
+  transform: scaleX(0.9);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.video-wrap:hover .video-shadow {
+  transform: scaleX(0.72) scaleY(0.8);
+  opacity: 0.65;
+}
+
+/* ===== 背景流星 ===== */
+/* 头部亮、尾渐隐的金色细线；动画大部分时间隐藏，前段闪现并沿角度方向滑出。
+   dx/dy 由 JS 按角度算好（0°=右、90°=下），translate 沿角度方向斜向下滑。 */
+.meteor {
+  position: absolute;
+  pointer-events: none;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 252, 240, var(--m-bright, 0.8)) 0%,
+    rgba(255, 240, 205, calc(var(--m-bright, 0.8) * 0.5)) 55%,
+    transparent 100%
+  );
+  filter: drop-shadow(
+      0 0 4px rgba(255, 226, 160, calc(var(--m-bright, 0.8) * 0.85))
+    )
+    drop-shadow(
+      0 0 12px rgba(255, 214, 130, calc(var(--m-bright, 0.8) * 0.45))
+    );
+  opacity: 0;
+  transform-origin: left center;
+  animation: meteor-fly var(--m-dur, 11s) ease-in-out var(--m-delay, 0s)
+    infinite;
+}
+@keyframes meteor-fly {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(var(--m-angle, -35deg));
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  12% {
+    opacity: calc(var(--m-bright, 0.8) * 0.95);
+  }
+  100% {
+    transform: translate3d(var(--m-dx, 500px), var(--m-dy, 320px), 0)
+      rotate(var(--m-angle, -35deg));
+    opacity: 0;
+  }
+}
+
+/* ===== 飞行小精灵 / IP 形象 ===== */
+/* host 铺满视频容器负责测量，精灵本体由 JS 直接写 transform 移动 */
+.flying-pet {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  pointer-events: none;
+}
+.flying-pet .pet-sprite-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.flying-pet img,
+.flying-pet .pet-sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 14px rgba(226, 190, 120, 0.35));
+  animation: pet-flap 1.5s ease-in-out infinite;
+}
+/* 飞行时上下扑动 + 轻摆 */
+@keyframes pet-flap {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(4deg);
+  }
+}
+/* 尾巴拖影：跟随精灵后方，一闪一闪 */
+.flying-pet .pet-trail {
+  position: absolute;
+  right: 86%;
+  top: 56%;
+  width: 44px;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(270deg, rgba(255, 226, 150, 0.5), transparent);
+  filter: blur(2.5px);
+  transform-origin: right center;
+  animation: pet-trail-pulse 0.9s ease-out infinite;
+}
+@keyframes pet-trail-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0.35);
+  }
+}
+/* 好奇模式：扑动更快、更亮 */
+.flying-pet[data-mode='curious'] img,
+.flying-pet[data-mode='curious'] .pet-sprite {
+  animation-duration: 0.65s;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 22px rgba(255, 226, 150, 0.65)) brightness(1.15);
+}
+/* 受惊模式：急促抖动 */
+.flying-pet[data-mode='flee'] img,
+.flying-pet[data-mode='flee'] .pet-sprite {
+  animation: pet-flee 0.28s ease-in-out infinite;
+}
+@keyframes pet-flee {
+  0%,
+  100% {
+    transform: translateX(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateX(-4px) rotate(6deg);
+  }
+}
+/* 眼睛随模式变化：好奇放大、受惊瞪大 */
+.flying-pet[data-mode='curious'] .pet-eye {
+  transform: scale(1.5);
+}
+.flying-pet[data-mode='flee'] .pet-eye {
+  transform: scale(1.25) translateY(-1px);
+}
+.flying-pet .pet-eye {
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+
+/* ===== 视频质感层 ===== */
+/* 柔光：中心暖光 + 斜射高光 */
+/* 强度刻意收敛：中心光上移并减弱，避免画面正中过曝 */
+.video-softglow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(
+      ellipse 85% 70% at 50% 20%,
+      rgba(255, 214, 140, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 50% 100%,
+      rgba(255, 190, 120, 0.22),
+      transparent 75%
+    );
+}
+.video-hi {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: screen;
+  opacity: 0.26;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 240, 205, 0.22) 0%,
+    transparent 42%
+  );
+}
+
+/* 细微划痕：极淡的白色细线，缓慢漂移，营造胶片岁月感 */
+.scratch {
+  position: absolute;
+  left: -8%;
+  width: 116%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.85) 30%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 80%
+  );
+  animation: scratch-drift 9s ease-in-out infinite;
+}
+@keyframes scratch-drift {
+  0%,
+  100% {
+    transform: translateX(-1.2%) rotate(var(--sr, 0deg));
+  }
+  50% {
+    transform: translateX(1.6%) rotate(var(--sr, 0deg));
+  }
+}
+
+/* ===== 底部立体星星挂饰：金线垂挂于视频边缘 ===== */
+/* 星星层跟随视频卡片悬浮动画：同样的俯视微倾 + 悬停抬起 + 进入动画 */
+.star-ornaments {
+  transform: rotateX(5deg);
+  transform-origin: center center;
+  will-change: transform;
+  animation: video-card-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: 0.35s;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.video-wrap:hover .star-ornaments {
+  transform: rotateX(0deg) translateY(-12px);
+}
+/* 吊牌层：挂在视频容器外（.video-frame 之外），与视频卡片同平面，悬停时与视频一同抬起 */
+.draggable-badge {
+  transform: rotateX(5deg);
+  transform-origin: center center;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.video-wrap:hover .draggable-badge {
+  transform: rotateX(0deg) translateY(-12px);
+}
+.star-ornament {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  z-index: 6;
+  transform-origin: top center;
+  animation: star-hang var(--dur, 4.5s) ease-in-out infinite;
+}
+/* 弯曲的金丝吊线：svg 曲线，从视频底边垂下，带自然弧度 */
+.star-ornament .star-thread {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 12px;
+  height: var(--hang, 18px);
+  transform: translateX(-50%);
+  overflow: visible;
+  filter: drop-shadow(0 0 5px rgba(242, 202, 123, 0.5));
+}
+/* 吊线与星星连接处的小金环，让吊线清晰可见 */
+.star-ornament .star-thread::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9b8, #c9933f 72%);
+  box-shadow: 0 0 5px rgba(255, 220, 150, 0.7), 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.star-ornament .star-body {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  animation: star-glow var(--dur, 4.5s) ease-in-out infinite;
+}
+/* 内部发光核心：独立脉动，明暗变化明显（亮前/亮后反差大） */
+.star-ornament .star-glow-core {
+  animation: star-core-pulse var(--dur, 4.5s) ease-in-out infinite;
+}
+/* 内部发光：光晕收缩贴身，从星体边缘渗出而非外放 */
+.star-ornament .star-halo {
+  position: absolute;
+  inset: -32%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 226, 150, 0.4), transparent 60%);
+  animation: star-halo-pulse var(--dur, 4.5s) ease-in-out infinite;
+}
+/* 金线（星链）：沿视频底边自然延展，星星垂挂其上 */
+.star-chain {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 14px;
+  width: 100%;
+  pointer-events: none;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 5px rgba(255, 210, 130, 0.25));
+}
+@keyframes star-hang {
+  0%,
+  100% {
+    transform: translateX(var(--sway, 0px)) translateY(0)
+      rotate(calc(var(--rot, 0deg) - 2.4deg));
+  }
+  25% {
+    transform: translateX(calc(var(--sway, 0px) - 4px)) translateY(-3px)
+      rotate(calc(var(--rot, 0deg) - 1deg));
+  }
+  50% {
+    transform: translateX(var(--sway, 0px)) translateY(-5px)
+      rotate(calc(var(--rot, 0deg) + 2.4deg));
+  }
+  75% {
+    transform: translateX(calc(var(--sway, 0px) + 4px)) translateY(-3px)
+      rotate(calc(var(--rot, 0deg) + 1deg));
+  }
+}
+@keyframes star-glow {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* 发光核心脉动：光从内部亮起再收敛 */
+@keyframes star-core-pulse {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes star-halo-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* 悬停视频：星星摆动加速、内部发光增强，与视频抬起协调联动 */
+.video-wrap:hover .star-ornament {
+  animation-duration: calc(var(--dur, 4.5s) * 0.72);
+}
+.video-wrap:hover .star-ornament .star-body {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55))
+    brightness(1.3);
+}
+.video-wrap:hover .star-ornament .star-glow-core {
+  animation-duration: calc(var(--dur, 4.5s) * 0.7);
+  opacity: 1;
+}
+.video-wrap:hover .star-ornament .star-thread {
+  filter: drop-shadow(0 0 7px rgba(242, 202, 123, 0.75));
+}
+.video-wrap:hover .star-ornament .star-halo {
+  background: radial-gradient(
+    circle,
+    rgba(255, 232, 165, 0.58),
+    transparent 60%
+  );
+}
+
+/* Work 页整体进入动画（配合门帘转场揭开） */
+@keyframes work-screen-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Work 页背景光晕：漂移幅度更大、呼吸更明显 */
+@keyframes work-blob-drift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.62; }
+  20%  { transform: translate(90px, -70px) scale(1.3); opacity: 1; }
+  45%  { transform: translate(-70px, 60px) scale(0.82); opacity: 0.55; }
+  70%  { transform: translate(50px, 80px) scale(1.18); opacity: 0.92; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.62; }
+}
+
+/* 工作页板块切换淡入动画 */
+@keyframes section-in {
+  from { opacity: 0; transform: translateY(12px) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) translateZ(0); }
+}
+.section-enter {
+  animation: section-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Work 页板块内卡片 3D 层叠入场：每张依次竖起浮现 */
+@keyframes section-card-in {
+  0% {
+    opacity: 0;
+    transform: translateY(34px) rotateX(14deg) scale(0.95);
+    filter: blur(7px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+    filter: blur(0);
+  }
+}
+.section-card {
+  transform-origin: top center;
+  animation: section-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 隐藏横向滚动条（移动端顶部标签栏） */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 首页装饰贴纸轻微上下浮动 */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(var(--float-r, 0deg)); }
+  50% { transform: translateY(-12px) rotate(var(--float-r, 0deg)); }
+}
+
+/* ===== 贴纸标签（StickerTag）内层卡片质感 ===== */
+/* 精致的金属贴纸感：渐变 + 顶部受光 + 细腻描边 + 圆角 */
+.sticker-body {
+  color: #E9D5A8;
+  background:
+    /* 顶部受光 + 底部微暗，形成立体感 */
+    linear-gradient(160deg, rgba(74, 56, 32, 0.95) 0%, rgba(52, 39, 22, 0.94) 55%, rgba(36, 27, 15, 0.95) 100%);
+  border: 1.5px solid rgba(201, 169, 110, 0.65);
+  border-top-color: rgba(233, 213, 168, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  padding: 0.35em 0.95em;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  border-radius: 6px;
+  /* 细金描边内发光 */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+/* ENTP 贴纸：往左移一点 */
+.entp-sticker {
+  position: relative;
+  margin-right: 4px;
+  transform-origin: center;
+}
+.entp-sticker .sticker-body {
+  border-color: rgba(233, 213, 168, 0.7);
+  border-top-color: rgba(255, 240, 200, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.38),
+    0 5px 14px rgba(0, 0, 0, 0.42);
+}
+
+/* 背景柔和光斑：漂移 + 尺寸脉动 + 明暗呼吸，三者叠加让柔光"活"起来 */
+@keyframes blob-drift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.55; }
+  25%  { transform: translate(48px, -34px) scale(1.22); opacity: 1; }
+  50%  { transform: translate(-36px, 30px) scale(0.9); opacity: 0.45; }
+  75%  { transform: translate(-20px, -26px) scale(1.12); opacity: 0.8; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.55; }
+}
+
+/* ===== Work 页专属星球：暖金星球 + 倾斜星环，与首页背景拉开差异 ===== */
+@keyframes planet-float {
+  0%, 100% { transform: translate(0, 0) rotate(var(--ring-tilt, 0deg)); }
+  50%      { transform: translate(-26px, 34px) rotate(var(--ring-tilt, 0deg)); }
+}
+@keyframes planet-rotate {
+  0%   { transform: translate(-50%, -50%) rotate(var(--ring-tilt, 0deg)); }
+  100% { transform: translate(-50%, -50%) rotate(calc(var(--ring-tilt, 0deg) + 360deg)); }
+}
+@keyframes planet-glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.9; }
+}
+/* 星球容器：整体缓慢漂浮 */
+.planet-orb {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  --ring-tilt: -18deg;
+  animation: planet-float 16s ease-in-out infinite;
+}
+.planet-orb-small {
+  width: 110px;
+  height: 110px;
+  --ring-tilt: 0deg;
+  animation-duration: 12s;
+}
+/* 星球本体：暖金渐变 + 明暗相位，像一颗被光照亮的岩石行星 */
+.planet-body {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 74%;
+  height: 74%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 30%, #fff3cf 0%, #f2d990 26%, #c9a04f 52%, #8a6a2f 78%, #5f4520 100%);
+  box-shadow:
+    inset -12px -16px 30px rgba(40, 28, 12, 0.55),
+    inset 8px 10px 18px rgba(255, 248, 220, 0.5),
+    0 0 40px rgba(233, 213, 168, 0.35);
+  animation: planet-rotate 40s linear infinite;
+}
+.planet-body-small {
+  animation-duration: 60s;
+}
+/* 星球上的横向云带：几道更暗的弧线，增加行星表面细节 */
+.planet-body::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120%;
+  height: 30%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at center, rgba(90, 66, 30, 0.18), transparent 70%);
+  filter: blur(3px);
+}
+/* 星环：细扁椭圆，轻轻环绕星球本体。短轴略小于星球直径，配合倾斜角度
+   仍能形成环绕感；环被星球本体自然遮挡下半圈，更真实 */
+.planet-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 138%;
+  height: 62%;
+  transform: translate(-50%, -50%) rotate(var(--ring-tilt, 0deg));
+  border-radius: 50%;
+  border: 2px solid rgba(233, 213, 168, 0.45);
+  border-top-color: rgba(246, 227, 180, 0.8);
+  border-bottom-color: rgba(150, 112, 60, 0.28);
+  box-shadow:
+    0 0 12px rgba(233, 213, 168, 0.22),
+    inset 0 0 10px rgba(233, 213, 168, 0.2);
+}
+/* 星球外柔光：呼吸般明暗变化 */
+.planet-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150%;
+  height: 150%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 213, 168, 0.4), transparent 62%);
+  filter: blur(22px);
+  animation: planet-glow-pulse 8s ease-in-out infinite;
+}
+/* 左侧毛玻璃星球：半透明背景 + 背景模糊，圆形容器裁出球形。
+   表面转动由内部 .planet-surface 的横移实现 */
+.planet-body-teal {
+  width: 82%;
+  height: 82%;
+  overflow: hidden;
+  /* 表面转动由内部 .planet-surface 的横移实现，本体不做 360° 旋转 */
+  animation: none;
+  /* 毛玻璃：半透明暖色底 + 背景模糊 */
+  background: rgba(150, 90, 55, 0.4);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  backdrop-filter: blur(10px) saturate(130%);
+  box-shadow:
+    inset -12px -16px 30px rgba(30, 14, 6, 0.5),
+    inset 8px 10px 20px rgba(255, 220, 180, 0.25),
+    0 0 40px rgba(210, 140, 90, 0.28);
+  /* 大气层辉光：边缘一圈淡暖橙光圈 */
+  border: 1px solid rgba(255, 220, 180, 0.25);
+}
+/* 左侧星球星环：与右侧星环呈对角线方向倾斜（右环 -18deg，左环镜像为 +18deg） */
+.planet-ring-teal {
+  --ring-tilt: 18deg;
+  border-color: rgba(220, 190, 160, 0.4);
+  border-top-color: rgba(255, 235, 205, 0.8);
+  border-bottom-color: rgba(150, 112, 70, 0.25);
+  box-shadow:
+    0 0 12px rgba(240, 210, 170, 0.22),
+    inset 0 0 10px rgba(240, 210, 170, 0.2);
+}
+/* 左侧星球星环：让环的斜向倾斜跟随自身（覆盖基类用 --ring-tilt） */
+.planet-orb-teal {
+  --ring-tilt: 18deg;
+}
+/* 左侧星球外层柔光：暖橙色调，与暖金右侧呼应但更偏赤陶 */
+.planet-orb-teal .planet-glow {
+  background: radial-gradient(circle, rgba(230, 150, 100, 0.3), transparent 62%);
+}
+/* 屏蔽暖金基类给左侧星球加的横向云带，避免色彩冲突 */
+.planet-body-teal::after {
+  display: none;
+}
+/* 表面纹理层：简单明显的渐变色带，通过整体水平平移模拟星球
+   向右转露出大部分再回摆。配合 body 容器 overflow:hidden 裁出圆形。 */
+.planet-surface {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  background:
+    /* 球面明暗遮罩：左上受光偏亮、右下背光偏暗，让星球看起来是立体的球 */
+    radial-gradient(circle at 30% 28%, rgba(255, 240, 215, 0.4) 0%, rgba(255, 240, 215, 0) 48%),
+    radial-gradient(circle at 72% 78%, rgba(30, 14, 6, 0.45) 0%, rgba(30, 14, 6, 0) 52%),
+    /* 毛玻璃上的水彩晕染：半透明暖色色块错落叠压，透出磨砂玻璃感 */
+    radial-gradient(55% 42% at 24% 30%, rgba(255, 205, 160, 0.55), rgba(220, 150, 95, 0.28) 55%, transparent 75%),
+    radial-gradient(48% 60% at 58% 24%, rgba(240, 160, 110, 0.45), rgba(190, 105, 60, 0.25) 58%, transparent 76%),
+    radial-gradient(62% 50% at 82% 40%, rgba(150, 80, 45, 0.4), rgba(110, 55, 28, 0.25) 58%, transparent 78%),
+    radial-gradient(50% 55% at 40% 70%, rgba(255, 190, 135, 0.4), rgba(200, 125, 72, 0.22) 58%, transparent 76%),
+    radial-gradient(45% 38% at 12% 60%, rgba(255, 220, 175, 0.38), rgba(235, 165, 110, 0.2) 58%, transparent 74%),
+    radial-gradient(40% 45% at 70% 80%, rgba(180, 95, 52, 0.32), rgba(130, 62, 32, 0.2) 58%, transparent 74%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: planet-surface-sway 16s ease-in-out infinite;
+}
+@keyframes planet-surface-sway {
+  /* 静止时露出左半部分（球体右半）；摆动时整体右移 50%（即 surface 左缘从 0% 移到 -50%），
+     露出球体右侧约 80% 球面，再回摆 */
+  0%, 18%   { transform: translateX(0%); }
+  38%, 62%  { transform: translateX(-50%); }
+  82%, 100% { transform: translateX(0%); }
+}
+
+/* 主标题进入动画 */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.home-fade-up {
+  opacity: 0;
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 视频卡片进入动画 */
+/* 视频卡片进入：从远处俯冲落下，落到最终微倾姿态 */
+@keyframes video-card-in {
+  from { opacity: 0; transform: rotateX(9deg) scale(0.94) translateY(18px); }
+  to   { opacity: 1; transform: rotateX(5deg) scale(1) translateY(0); }
+}
+
+/* 装饰图片轻微摆动 */
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+
+/* 对话提示箭头上下跳动 */
+@keyframes bounce-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+
+/* ===== About 角色卡 ===== */
+/* 属性条入场填充：从 0 涨到目标宽度 */
+@keyframes stat-fill {
+  from { width: 0; }
+}
+.stat-bar-fill {
+  animation: stat-fill 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ===== Work 手账主体 ===== */
+
+/* 数据徽章：金色数值 + 小标签 */
+.stat-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  /* 深底:暖黑棕 → 深棕,立体渐变 + 顶光高光 */
+  border: 1px solid rgba(232, 207, 150, 0.42);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232, 207, 150, 0.16) 0%, transparent 60%),
+    linear-gradient(160deg, #3a2b18 0%, #241a0e 55%, #150e07 100%);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.55),
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    0 0 18px rgba(216, 178, 106, 0.12),
+    inset 0 1px 0 rgba(255, 235, 190, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+.stat-badge .sb-value {
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 800;
+  line-height: 1.05;
+  background: linear-gradient(180deg, #fbeac4 0%, #e9d5a8 55%, #c9a96e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.8));
+  text-shadow: 0 1px 0 rgba(255, 235, 190, 0.25);
+}
+.stat-badge .sb-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d8cbb0;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* 技术标签 chip：金色描边小胶囊 */
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #e9d5a8;
+  border: 1px solid rgba(201, 169, 110, 0.4);
+  background: rgba(36, 26, 16, 0.55);
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+.tech-chip:hover {
+  color: #f6e3b4;
+  border-color: rgba(233, 213, 168, 0.8);
+  transform: translateY(-1px);
+}
+
+/* 纸胶带：半透明鎏金胶带条，两端撕边 */
+.washi-tape {
+  display: inline-block;
+  width: 96px;
+  height: 22px;
+  background: linear-gradient(
+    100deg,
+    rgba(224, 197, 147, 0.82),
+    rgba(186, 152, 100, 0.82)
+  );
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 3px,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent calc(100% - 3px)
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 3px,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent calc(100% - 3px)
+  );
+}
+
+/* 课程进度条（独立类名，避免与 Core Courses 的 .course-track 冲突） */
+.course-progress {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(201, 169, 110, 0.16);
+  border: 1px solid rgba(201, 169, 110, 0.28);
+  overflow: hidden;
+}
+.course-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8a6d3f, #e9d5a8);
+  box-shadow: 0 0 10px rgba(233, 213, 168, 0.4);
+}
+
+/* 勋章圆徽：金 / 银 */
+.medal-gold,
+.medal-silver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+.medal-gold {
+  background: radial-gradient(
+    circle at 34% 30%,
+    #f7e3b0,
+    #c9a96e 52%,
+    #8a6d3f 78%,
+    #5f4a28
+  );
+  box-shadow:
+    0 0 0 2px rgba(247, 227, 176, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.25);
+}
+.medal-silver {
+  background: radial-gradient(
+    circle at 34% 30%,
+    #eef1f5,
+    #b8bfc9 52%,
+    #828b98 78%,
+    #565d68
+  );
+  box-shadow:
+    0 0 0 2px rgba(238, 241, 245, 0.3),
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+.medal-gold:hover,
+.medal-silver:hover {
+  transform: translateY(-3px) scale(1.06);
+}
+.medal-gold:hover {
+  box-shadow:
+    0 0 0 2px rgba(247, 227, 176, 0.55),
+    0 10px 22px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(233, 213, 168, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+.medal-silver:hover {
+  box-shadow:
+    0 0 0 2px rgba(238, 241, 245, 0.5),
+    0 10px 22px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(200, 208, 218, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35);
+}
+.medal-star {
+  font-size: 23px;
+  line-height: 1;
+  color: #17110b;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+/* 时间线金线与节点 */
+.timeline-line {
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(201, 169, 110, 0.75) 6%,
+    rgba(201, 169, 110, 0.75) 94%,
+    transparent
+  );
+}
+.timeline-node {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f6e3b4, #a98350 70%);
+  box-shadow:
+    0 0 0 4px rgba(233, 213, 168, 0.18),
+    0 0 12px rgba(233, 213, 168, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== About 档案盒：底部滑入 + 盒盖掀开 + 档案抽出 ===== */
+/* 档案盒从视口底部滑入停稳 */
+@keyframes file-box-in {
+  0%   { opacity: 0; transform: translateY(120%) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* 盒盖向后掀开（3D，依赖父级 perspective） */
+@keyframes file-lid-open {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-108deg); }
+}
+/* 档案纸从盒口抽出：先下坠再抽上，末端轻微回弹与歪斜 */
+@keyframes file-pull-out {
+  0%   { opacity: 0; transform: translateY(calc(100% + 34px)) rotate(-3.5deg) scale(0.96); filter: blur(6px); }
+  28%  { opacity: 1; filter: blur(0); }
+  58%  { transform: translateY(-4%) rotate(1.4deg) scale(1.006); }
+  78%  { transform: translateY(1.8%) rotate(-0.6deg) scale(1); }
+  100% { opacity: 1; transform: translateY(0) rotate(-0.8deg) scale(1); filter: blur(0); }
+}
+/* 盒口半露纸边轻轻起伏，暗示盒里还有档案 */
+@keyframes file-edge-peek {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(4px); }
+}
+/* 盒底投影呼吸 */
+@keyframes file-shadow-breathe {
+  0%, 100% { opacity: 0.55; transform: scaleX(1); }
+  50%      { opacity: 0.32; transform: scaleX(0.86); }
+}
+/* 签名手绘下划线的流光描边 */
+@keyframes file-underline-draw {
+  0%   { stroke-dashoffset: 60; opacity: 0.15; }
+  100% { stroke-dashoffset: 0; opacity: 0.75; }
+}
+/* 档案卡右上角 GPA 金色大数字 */
+.file-gpa {
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #f6e3b4, #c9a96e 82%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
+}
+
+/* ===== About 名片（手账流水式） ===== */
+/* 墨迹落笔：签名从墨晕中清晰显形 */
+@keyframes ink-drop {
+  0%   { opacity: 0; filter: blur(12px); transform: translateY(8px) scale(1.06); }
+  55%  { opacity: 1; filter: blur(2px); }
+  100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+}
+/* 签名区小牛皮纸：手账错落微旋转，hover 微上浮 + 金边呼吸 */
+.sig-paper {
+  margin-top: -15px;
+  /* 纯书法大字：去掉牛皮纸底、描边、阴影、旋转，文字无边框直接呈现 */
+  background: none;
+  box-shadow: none;
+  border: none;
+  transform: none;
+  transition: transform 0.35s ease;
+}
+.sig-paper:hover {
+  transform: translateY(-2px);
+}
+@keyframes sig-gold-breath {
+  0%, 100% {
+    border-color: rgba(233, 213, 168, 0.5);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 12px rgba(233, 213, 168, 0.18);
+  }
+  50% {
+    border-color: rgba(233, 213, 168, 0.85);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(233, 213, 168, 0.4);
+  }
+}
+/* GPA 金徽章：升级为「3D 压印金币」——金箔立体浮雕 + 深色数字压印 + 内描边。
+   数字 count-up 完成后金币脉动一次（gpa-pulse），像一枚刚被压印出来的纪念币 */
+.gpa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #17110b;
+  background: radial-gradient(
+    circle at 30% 28%,
+    #f8e6b8 0%,
+    #d8b477 45%,
+    #b58a4e 72%,
+    #7c5c2e 100%
+  );
+  border: 1px solid rgba(247, 227, 176, 0.55);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 0.3),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 14px rgba(233, 213, 168, 0.3);
+}
+.gpa-badge b {
+  font-size: inherit;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #17110b;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gpa-pulse 0.7s ease-out 1;
+}
+/* 金币数字压印脉动：由 count-up 结束后触发一次，模拟冲压落定 */
+@keyframes gpa-pulse {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.22); text-shadow: 0 0 8px rgba(247, 227, 176, 0.9); }
+  100% { transform: scale(1); }
+}
+/* 签名标题边缘的局部蓝黄笔触：仅点缀几道，不做大面积铺设 */
+.resume-brush {
+  position: relative;
+  display: inline-block;
+}
+/* 蓝色笔触：标题右上角一道斜勾 */
+.resume-brush::before {
+  content: '';
+  position: absolute;
+  top: 12%;
+  right: -14px;
+  width: 26px;
+  height: 5px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(113, 134, 201, 0.7), rgba(113, 134, 201, 0.15));
+  transform: rotate(-32deg);
+  pointer-events: none;
+}
+/* 黄色笔触：标题左下角一道短勾 */
+.resume-brush::after {
+  content: '';
+  position: absolute;
+  bottom: 18%;
+  left: -12px;
+  width: 22px;
+  height: 4.5px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(217, 180, 95, 0.65), rgba(217, 180, 95, 0.12));
+  transform: rotate(24deg);
+  pointer-events: none;
+}
+/* 硕士"在读"角标：虚线小贴纸 */
+.in-progress-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #e9d5a8;
+  background: rgba(36, 26, 16, 0.72);
+  border: 1px dashed rgba(233, 213, 168, 0.45);
+  transform: rotate(2deg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== About 背景水印：大号透明的 ABOUT ME 文字，作为板块背景装饰 ===== */
+.about-watermark {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  z-index: 0;
+  transform: translate(-50%, -50%) rotate(-3deg);
+  font-family: 'Times New Roman', 'STSong', 'SimSun', '宋体', serif;
+  font-size: clamp(80px, 16vw, 230px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(201, 169, 110, 0.08);
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.about-watermark.is-active {
+  animation: about-watermark-in 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes about-watermark-in {
+  from { opacity: 0; letter-spacing: 0.3em; }
+  to   { opacity: 1; letter-spacing: 0.12em; }
+}
+
+/* ===== About 主体卡片：渐变边框（仅左/右/下三边，上边无）+ 顶透底实的线性渐变背景 ===== */
+/* 用法：包住主体内容的容器添加 .about-body-card；伪元素绘制边框与底色，内容置于其上 */
+.about-body-card {
+  position: relative;
+  /* 错落手作圆角：四个角大小不一，打破「正方形卡片」的呆板，
+     像一张被裁切过的手账纸（顺时针：左上大→右上小→右下大→左下小） */
+  border-radius: 24px 15px 28px 14px;
+  padding: 26px 28px 52px;
+  isolation: isolate;
+  /* 整体等比例放大一点（不影响布局流） */
+  zoom: 1.15;
+
+  /* C 噪声溶解边缘：feTurbulence + feDisplacementMap 把矩形边缘位移成
+     被颗粒啃噬的不规则轮廓，取代原来 30 个折点的机械锯齿 clip-path。
+     与 Campus 卷轴（--cs-edge）同一套工艺，全站边缘语言统一。 */
+  --about-edge-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='880' height='620'%3E%3Cdefs%3E%3Cfilter id='e' x='-12%25' y='-12%25' width='124%25' height='124%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.019' numOctaves='4' seed='23' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='26' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='8' y='8' width='864' height='604' rx='16' fill='%23fff' filter='url(%23e)'/%3E%3C/svg%3E");
+}
+/* 底图：上透明暗玻璃 → 68% 处亮起横带 → 底部实心鎏金。
+   相较原版：把实金起点从 48% 下推到 70% 附近，顶部 70% 保持暗玻璃，
+   避免整张卡下半像一块橙色瓷砖把暖色文字糊住。 */
+.about-body-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  /*
+    A 真噪声替代点阵：删掉全部周期性圆点/网格图层，
+    改用 feTurbulence 分形噪声（无周期、无网格感）+ 多方向随机纤维。
+    B 牛皮纸本色 + 聚光：中心 #d8c19a → 中段 #b89a6c → 外缘 #7d5c36，
+    高光从 0.75 压到 0.3，明度跨度拉开形成聚光焦点。
+    D 随机纤维：角度取 7°/97°/163°（非 0/90），周期取质数 3/7/11px 互相错开，
+    避免等距横线造成「横格作业本」感。
+    E 不规则茶渍：减到 2 团、用 ellipse 且透明度减半，边缘柔和过渡。
+  */
+  background:
+    /* ① 极细纸张纤维：三个非正交角度、质数周期，交叉后无可见网格 */
+    repeating-linear-gradient(7deg, rgba(94, 66, 34, 0.045) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(97deg, rgba(110, 78, 40, 0.04) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(163deg, rgba(84, 58, 30, 0.035) 0 1px, transparent 1px 11px),
+    /* ② 不规则茶渍：仅 2 团，椭圆且低透明度，像陈年水渍而非卡通圆点 */
+    radial-gradient(34% 19% at 17% 24%, rgba(150, 104, 52, 0.075), transparent 72%),
+    radial-gradient(26% 22% at 86% 84%, rgba(132, 90, 44, 0.065), transparent 74%),
+    /* ③ 纸面自然起伏：大尺度非周期的亮暗块，模拟手工纸厚薄不均 */
+    radial-gradient(120% 52% at 28% 34%, rgba(255, 240, 208, 0.1), transparent 62%),
+    radial-gradient(110% 48% at 74% 68%, rgba(96, 64, 32, 0.09), transparent 64%),
+    /* ④ 边缘氧化暗角：四边泛褐，中间干净 */
+    radial-gradient(128% 100% at 50% 50%, transparent 48%, rgba(112, 76, 36, 0.3) 100%),
+    /* ⑤ 环境光影：145° 斜向，强度大幅压低（原 0.75 → 0.3），保留体积感不刺眼 */
+    linear-gradient(
+      145deg,
+      rgba(255, 250, 236, 0.3) 0%,
+      rgba(255, 248, 230, 0.12) 32%,
+      rgba(214, 186, 142, 0.02) 58%,
+      rgba(122, 86, 44, 0.16) 100%
+    ),
+    /* ⑥ 牛皮纸本色：中心亮 → 中段 → 外缘沉入暖褐，形成聚光。
+       外缘止步于 #a07c4c 而非更深的褐，保证正文在纸面任意位置都有足够对比度 */
+    radial-gradient(112% 96% at 50% 42%,
+      #dcc69f 0%,
+      #cfb489 34%,
+      #c2a173 60%,
+      #b08c5c 82%,
+      #a07c4c 100%);
+  /* 真噪声层放到 ::after 之前的独立伪元素承载见下（此处仅纸底） */
+  box-shadow: inset 0 -18px 24px -12px rgba(74, 46, 20, 0.34);
+  /* C 噪声溶解边缘：删掉 30 点机械锯齿 clip-path，改用 feTurbulence + feDisplacementMap
+     位移的矩形 mask，边缘呈颗粒状啃噬消散，与 Campus 卷轴同一套工艺 */
+  -webkit-mask-image: var(--about-edge-mask);
+  mask-image: var(--about-edge-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+/* 边框：仅左/右/下三边，左右颜色横向渐变（左浅金 → 中暗金 → 右更深暗金） */
+.about-body-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* 边框：仅左/右两边，去上边也去下边；底部手撕锯齿（与 ::before 对齐） */
+  border-left: 1px solid rgba(201, 169, 110, 0.35);
+  border-right: 1px solid rgba(201, 169, 110, 0.35);
+  border-top: none;
+  border-bottom: none;
+  box-shadow:
+    /* 边缘渐变内阴影：沿四边向内做柔和的明暗过渡，让卡片边缘更精致、更清晰。
+       纸底压暗后顶部高光相应减弱，避免在牛皮纸上出现「打印纸白边」 */
+    inset 0 22px 20px -14px rgba(255, 250, 232, 0.34),
+    inset 0 -22px 20px -10px rgba(96, 64, 28, 0.34),
+    inset 24px 0 20px -14px rgba(255, 250, 232, 0.22),
+    inset -24px 0 20px -14px rgba(96, 64, 28, 0.28),
+    /* 顶部受光高光 */
+    inset 0 1px 0 rgba(255, 250, 235, 0.4),
+    /* 外部投影 */
+    0 14px 38px rgba(0, 0, 0, 0.4);
+  /* 边缘光泽呼吸：让卡片边缘的柔和光影缓慢明暗流动，非悬浮的动态质感 */
+  animation: about-edge-breathe 7s ease-in-out infinite;
+  /* C：与 ::before 共用同一张噪声边缘 mask，保证底色层与描边层轮廓严格一致 */
+  -webkit-mask-image: var(--about-edge-mask);
+  mask-image: var(--about-edge-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+/* A 真噪声层：feTurbulence 分形噪声（无周期、无网格感），
+   multiply 混合压在纸底上，形成真正的磨砂牛皮纸颗粒。
+   与纸底共用 --about-edge-mask，边缘随之一起溶解。 */
+/* A 真噪声层：feTurbulence 分形噪声（无周期、无网格感），
+   multiply 混合压在纸底上，形成真正的磨砂牛皮纸颗粒。
+   与纸底共用 --about-edge-mask，边缘随之一起溶解。
+   选择器加重（.about-body-card > .about-paper-grain）以压过后面的 .about-body-card > * ，
+   否则会被它重置成 position:relative / z-index:5 而跑到内容层之上。 */
+.about-body-card > .about-paper-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' seed='17'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 260px 260px;
+  -webkit-mask-image: var(--about-edge-mask);
+  mask-image: var(--about-edge-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* 边缘光泽呼吸：卡片四周的柔和光影缓慢明暗流动，非悬浮的动态质感 */
+@keyframes about-edge-breathe {
+  0%, 100% {
+    box-shadow:
+      inset 0 22px 20px -14px rgba(255, 252, 240, 0.75),
+      inset 0 -22px 20px -10px rgba(110, 80, 40, 0.32),
+      inset 24px 0 20px -14px rgba(255, 252, 240, 0.5),
+      inset -24px 0 20px -14px rgba(110, 80, 40, 0.26),
+      inset 0 1px 0 rgba(255, 250, 235, 0.4),
+      0 14px 38px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow:
+      inset 0 22px 22px -12px rgba(255, 252, 240, 0.92),
+      inset 0 -22px 22px -8px rgba(110, 80, 40, 0.4),
+      inset 24px 0 22px -12px rgba(255, 252, 240, 0.66),
+      inset -24px 0 22px -12px rgba(110, 80, 40, 0.34),
+      inset 0 1px 0 rgba(255, 250, 235, 0.55),
+      0 14px 40px rgba(0, 0, 0, 0.45);
+  }
+}
+.about-body-card > * {
+  position: relative;
+  z-index: 5;
+}
+/* 自述旁边的相框：透明PNG直接透出（无纸底填充），金色细边 + 阴影 + 微旋转，溢出卡片边界 */
+.about-frame {
+  border-radius: 8px;
+  /* 无背景填充，让 PNG 透明区域直接透出 */
+  background: none;
+  border: 1.5px solid rgba(201, 169, 110, 0.65);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  transform: rotate(4deg);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.about-frame img,
+.about-frame video {
+  display: block;
+  border-radius: 6px;
+}
+.about-frame:hover {
+  transform: rotate(2deg) translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+}
+/* 主体卡纯浅色适配：自述文字改深棕，首字/句点改深金，保证在浅底上清晰可读 */
+.about-body-card .about-bio {
+  /* 纸底压暗成牛皮纸后正文相应加深，保证在纸面任意位置的对比度 */
+  color: #33230f;
+  will-change: transform;
+}
+.about-body-card .about-bio::first-letter {
+  /* 偏亮金，带明显投影 */
+  color: #e8c877;
+  text-shadow:
+    1px 2px 3px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(233, 213, 168, 0.45);
+}
+.about-body-card .about-bio::after {
+  color: #e8c877;
+  text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* 板块内正文滚动条：更细更暗，融入暗夜底 */
+.work-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.work-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.work-scroll::-webkit-scrollbar-thumb {
+  background: rgba(201, 169, 110, 0.35);
+  border-radius: 999px;
+}
+
+/* ===== About 自述段：首字下沉（手账大写装饰字母）+ 句末金色句点 ===== */
+.about-bio {
+  position: relative;
+}
+/* 首字母下沉：书法金色大字母，像手账开头的大写装饰首字。
+   正文行高为 1.85，这里用 line-height 让首字框高约等于两行文字高度，
+   float 首字顶部与第一行顶部对齐、底部与第二行底部齐平，保证与正文对齐自然 */
+.about-bio::first-letter {
+  float: left;
+  font-family: '鸿雷板书简体', 'HongLeiBanShu', 'STKaiti', 'KaiTi', '楷体', 'Georgia', serif;
+  font-size: 2.2em;
+  line-height: 1.5;
+  font-weight: 600;
+  padding: 0 9px 0 0;
+  margin-top: -8px;
+  color: #e8c877;
+  text-shadow:
+    1px 2px 3px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(233, 213, 168, 0.45);
+}
+/* 句末金色句点：用 ✦ 装饰代替普通句点，呼应手账小点缀 */
+.about-bio::after {
+  content: '◦';
+  margin-left: 3px;
+  font-size: 1.3em;
+  line-height: 0;
+  vertical-align: middle;
+  color: #e9cf97;
+  text-shadow: 0 0 6px rgba(233, 213, 168, 0.5);
+}
+
+
+
+/* ===== About 教育行视觉权重 ===== */
+/* 左时间：金色标尺竖条（伪元素）+ 等宽金色数字 */
+.edu-time {
+  position: relative;
+  padding-left: 13px;
+}
+.edu-time::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f6e3b4, #8a6d3f);
+  box-shadow: 0 0 6px rgba(233, 213, 168, 0.45);
+}
+/* 中学校名：暖白正文 + 淡虚线下划，hover 变实线并微发光，保证在鎏金底上清晰可读 */
+.edu-school {
+  border-bottom: 1px dashed rgba(233, 213, 168, 0.28);
+  transition: border-color 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+}
+.edu-school:hover {
+  border-bottom-style: solid;
+  border-color: rgba(246, 227, 180, 0.65);
+  color: #fff6e0;
+  text-shadow: 0 0 10px rgba(246, 227, 180, 0.35);
+}
+/* 右学位：金色骑缝章徽（小圆角方 + 金边 + 内浮雕） */
+.edu-degree {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  padding: 3px 7px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: #e9d5a8;
+  background: linear-gradient(160deg, rgba(60, 44, 26, 0.9), rgba(31, 22, 13, 0.95));
+  border: 1.5px solid rgba(201, 169, 110, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Core Courses 标题：左侧金色短条 + 前置档案序号 ===== */
+.courses-heading {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 14px;
+}
+/* 左侧 3px 金色高亮短条 */
+.courses-heading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 15px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f6e3b4, #a98350);
+  box-shadow: 0 0 8px rgba(233, 213, 168, 0.5);
+}
+/* 前置序号：档案目录语感（当前是第 2 个模块） */
+
+/* ===== Core Courses 横向滚动（保险的原生滚动方式） ===== */
+/* 滚动容器：原生横向滚动（浏览器处理渲染，绝不裁剪文字），隐藏滚动条 */
+.course-scroller {
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.course-scroller::-webkit-scrollbar {
+  display: none;
+}
+/* 轨道不换行、内容自适应宽度，超宽则横向滚动 */
+.course-track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: max-content;
+}
+/* ===== Core Courses 分数数字：hover 金色发光 ===== */
+.score-num {
+  transition: text-shadow 0.25s ease, filter 0.25s ease;
+}
+/* 课程 chip：深色背景，确保有足够的上下内边距与行高，文字完整不被裁切 */
+.course-chip {
+  height: auto;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  line-height: 1.4;
+  transform: translateZ(0);
+  /* 深色卡片背景：中深棕，比近黑更柔和不那么压抑 */
+  background: linear-gradient(160deg, #35291e 0%, #3f3123 60%, #2a2015 100%);
+  border-color: rgba(201, 169, 110, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 226, 172, 0.14),
+    inset 0 -6px 10px -6px rgba(0, 0, 0, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.tech-chip:hover .score-num {
+  text-shadow:
+    0 0 8px rgba(246, 227, 180, 0.85),
+    0 0 14px rgba(140, 130, 225, 0.45);
+  filter: brightness(1.18);
+}
+
+/* ===== 破形：教育两行 → 实色牛皮纸便利贴，横向溢出卡片边界。
+     背景用不透明实色，像真正的便利贴贴在卡片边缘，
+     用独立 rotate/translate 属性避免被 .section-card 入场动画覆盖。
+     入场动画改为「下沉」：从上方轻落下（覆盖 .section-card 的上浮） ===== */
+.edu-row {
+  position: relative;
+  border-radius: 12px 18px 10px 16px;
+  padding: 11px 16px;
+  /* 强制单行不换行：专业名称一行完整显示（覆盖 Tailwind flex-wrap） */
+  flex-wrap: nowrap;
+  border: 1px solid rgba(201, 169, 110, 0.6);
+  /* 整体往下 3px */
+  translate: 0 3px;
+  transition: translate 0.3s ease, rotate 0.3s ease, border-color 0.3s ease;
+  /* 覆盖 .section-card 的上浮入场：改为从上方下沉落下 */
+  animation: edu-drop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* 3D 顶部厚度边：顶面微微翘起，强化立体层次 */
+.edu-row::before {
+  content: '';
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: -4px;
+  height: 5px;
+  border-radius: 8px 10px 0 0;
+  background: linear-gradient(180deg, rgba(255, 226, 170, 0.5) 0%, rgba(190, 150, 90, 0.35) 100%);
+  z-index: -1;
+  transform: perspective(120px) rotateX(-24deg);
+  transform-origin: bottom center;
+}
+/* 下沉入场：从上方（translateY 负值）落到原位，带轻微弹性过冲 */
+@keyframes edu-drop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px) rotateX(-10deg) scale(0.97);
+    filter: blur(5px);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(6px) rotateX(3deg) scale(1.01);
+    filter: blur(0);
+  }
+  78% {
+    transform: translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+    filter: blur(0);
+  }
+}
+/* 两行便利贴：错落圆角 + 一角折角（像被掀起的手撕纸角），打破规整长条。
+   质感：深黑到深蓝的沉稳渐变 + 金色光斑 + 顶部受光、底部深影的立体层次 */
+.edu-row-odd {
+  rotate: -1.1deg;
+  /* 四角错落圆角：左上大、右上小、右下大、左下小，像手撕便利贴 */
+  border-radius: 22px 6px 18px 8px;
+  /* 蓝黑渐变：深黑过渡到深蓝，左上微微透光、右下更重 */
+  background:
+    /* 金色光斑：右上角一点精致的暖金辉光 */
+    radial-gradient(
+      ellipse 46% 58% at 90% 12%,
+      rgba(233, 195, 130, 0.4),
+      transparent 72%
+    ),
+    /* 深蓝高光：顶部轻微受光 */
+    radial-gradient(
+      ellipse 60% 40% at 30% 0%,
+      rgba(90, 115, 175, 0.35),
+      transparent 68%
+    ),
+    /* 黑→深蓝→近黑渐变：中间透出蓝、两端压黑，质感沉稳高级 */
+    linear-gradient(
+      160deg,
+      #0d1118 0%,
+      #1a2436 30%,
+      #2a3852 55%,
+      #141b28 80%,
+      #0a0d13 100%
+    );
+  box-shadow:
+    /* 顶部弱弱金色反光：一道柔和的金色辉光沿上缘 */
+    inset 0 1px 0 rgba(255, 226, 172, 0.4),
+    inset 0 12px 14px -9px rgba(246, 227, 180, 0.28),
+    inset 0 -14px 22px -12px rgba(0, 0, 0, 0.65),
+    /* 只向下方聚焦的深阴影：投到第二张卡上方，加深中间空隙 */
+    0 18px 26px -6px rgba(0, 0, 0, 0.7);
+}
+.edu-row-even {
+  rotate: 1.3deg;
+  /* 四角错落圆角：与上一张相反 */
+  border-radius: 6px 22px 8px 18px;
+  /* 紫黑渐变：深黑过渡到深紫，左上微微透光、右下更重 */
+  background:
+    /* 金色光斑：右上角一点精致的暖金辉光 */
+    radial-gradient(
+      ellipse 46% 58% at 90% 12%,
+      rgba(233, 195, 130, 0.38),
+      transparent 72%
+    ),
+    /* 深紫高光：顶部轻微受光 */
+    radial-gradient(
+      ellipse 60% 40% at 30% 0%,
+      rgba(120, 90, 180, 0.32),
+      transparent 68%
+    ),
+    /* 黑→深紫→近黑渐变：中间透出紫、两端压黑 */
+    linear-gradient(
+      160deg,
+      #120d1a 0%,
+      #241a38 30%,
+      #3a2b58 55%,
+      #1c1428 80%,
+      #0d0912 100%
+    );
+  box-shadow:
+    /* 顶部弱弱金色反光：一道柔和的金色辉光沿上缘 */
+    inset 0 1px 0 rgba(255, 226, 172, 0.38),
+    inset 0 12px 14px -9px rgba(246, 227, 180, 0.26),
+    inset 0 -14px 22px -12px rgba(0, 0, 0, 0.65),
+    0 12px 26px rgba(0, 0, 0, 0.65);
+}
+/* ===== 教育卡片左侧钢笔笔尖：横向从卡片里面伸出，尖端朝左。
+          颜色随卡片：奇数列蓝色、偶数列黄色，与各自流苏同色 ===== */
+.edu-nib {
+  position: absolute;
+  left: -36px;
+  top: 50%;
+  width: 33px;
+  height: 24px;
+  transform: translateY(-50%) rotate(-2deg);
+  pointer-events: none;
+  z-index: 4;
+  filter: drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.4));
+}
+.edu-nib svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* 第一张卡（奇数列）：蓝色笔尖，与冷蓝流苏同色 */
+.edu-row-odd .edu-nib {
+  color: #7186c9;
+}
+/* 第二张卡（偶数列）：黄色笔尖，与暖金流苏同色 */
+.edu-row-even .edu-nib {
+  color: #d9b45f;
+}
+/* 两个笔尖中心的手绘爱心：位于教育容器左缘、垂直居中于两卡之间 */
+.edu-heart {
+  position: absolute;
+  left: -64px;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translateY(-50%) rotate(-8deg);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+  animation: edu-heart-float 4s ease-in-out infinite;
+}
+.edu-heart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@keyframes edu-heart-float {
+  0%, 100% { transform: translateY(-50%) rotate(-8deg) translateY(0); }
+  50%      { transform: translateY(-50%) rotate(-6deg) translateY(-3px); }
+}
+
+/* ===== 教育便利贴右侧流苏：从卡片右缘一个固定锚点长出来，垂落并随风轻摆 ===== */
+/* 锚点：固定在卡片右侧缘的一个小结/穿孔位，紧贴卡片，不参与摆动，
+   让流苏看起来是从卡片侧边「长出来」的固定连接点 */
+.edu-fringe {
+  position: absolute;
+  /* 锚点结的中心对齐到卡片右缘（卡片右缘即 x=0，结中心略微探出一点） */
+  right: -14px;
+  top: 22px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  pointer-events: none;
+  z-index: 6;
+  /* 转折处的结：贴在从卡片侧缘水平伸出的线端点上，向下转折垂落流苏 */
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe9b8 0%, #d8b468 55%, #9a7a3f 100%);
+  box-shadow:
+    inset -1px -1px 2px rgba(90, 66, 30, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+/* 水平伸出段：从卡片右缘水平伸到转折结，形成「L 形转折」——
+   流苏的线先水平伸出，到结处向下转折垂落，结不再孤立漂浮。
+   段更短、更粗，且贴住卡片右缘 */
+.edu-fringe::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(214, 176, 100, 0.55), rgba(246, 227, 180, 0.95));
+  filter: blur(0.2px);
+}
+/* 垂下的流苏：从锚点结正下方垂落，围绕结顶端（transform-origin 顶部）随风轻摆 */
+.edu-fringe::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 6px;
+  width: 16px;
+  height: 112px;
+  transform-origin: 50% 0;
+  animation: fringe-sway 5.5s ease-in-out infinite;
+  /* 一束细柔丝线：顶部收束、末端自然散开（无塑料硬边，靠半透明与柔光） */
+  background:
+    /* 中间主丝束 */
+    linear-gradient(180deg, rgba(246, 227, 180, 0.95) 0%, rgba(216, 180, 104, 0.85) 55%, rgba(180, 140, 76, 0.5) 100%),
+    /* 两侧更细的散丝（半透明，营造毛边感） */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      rgba(255, 240, 200, 0.55) 2px 3px,
+      transparent 3px 5px,
+      rgba(200, 165, 100, 0.5) 5px 6px,
+      transparent 6px 8px
+    );
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 60%, rgba(0, 0, 0, 0.7) 92%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 60%, rgba(0, 0, 0, 0.7) 92%, transparent 100%);
+  clip-path: polygon(14% 0, 86% 0, 100% 70%, 78% 100%, 60% 90%, 42% 100%, 24% 88%, 0 68%);
+  border-radius: 1px 1px 8px 8px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.28));
+}
+/* 摆动：只在穗束上做小幅度左右摇摆，锚点保持固定 */
+@keyframes fringe-sway {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(5deg); }
+  50%      { transform: rotate(0deg); }
+  75%      { transform: rotate(-6deg); }
+}
+/* 奇数列流苏：呼应深蓝便利贴，穗束偏冷蓝金 */
+.edu-row-odd .edu-fringe {
+  background: radial-gradient(circle at 35% 35%, #eaf0ff 0%, #aabcf0 55%, #7186c9 100%);
+  box-shadow:
+    inset -1px -1px 2px rgba(40, 55, 100, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.edu-row-odd .edu-fringe::before {
+  background:
+    linear-gradient(180deg, rgba(224, 234, 255, 0.95) 0%, rgba(168, 190, 235, 0.85) 55%, rgba(120, 140, 200, 0.5) 100%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      rgba(235, 242, 255, 0.5) 2px 3px,
+      transparent 3px 5px,
+      rgba(170, 195, 245, 0.45) 5px 6px,
+      transparent 6px 8px
+    );
+}
+.edu-row-odd .edu-fringe::after {
+  background: linear-gradient(180deg, rgba(170, 195, 240, 0.8), rgba(170, 195, 240, 0.4));
+}
+
+.edu-row:hover {
+  translate: 0 -3px;
+  rotate: 0deg;
+  border-color: rgba(233, 213, 168, 0.85);
+}
+
+/* ===== 打破方形：自述段 → 无框纯文字，仅轻微暖白底纹（不制造新容器） ===== */
+
+
+/* ===== About 签名区 ✦ 角星：升级为「金芯 + 蓝紫柔光」双色光点 + 入场脉冲 ===== */
+.sig-star {
+  color: #e9cf97;
+  /* 金色本体 + 蓝紫色柔光外溢，制造「暗夜 + 鎏金」的冷暖对话 */
+  text-shadow:
+    0 0 5px rgba(201, 169, 110, 0.9),
+    0 0 12px rgba(126, 140, 200, 0.55),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+  opacity: 0.9;
+}
+/* 入场时脉冲一次：外圈蓝紫光先漫开再收束到金芯，像星星被点亮 */
+.sig-star.is-active {
+  animation: sig-star-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+@keyframes sig-star-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  40%  { transform: scale(1.7); opacity: 1; }
+  65%  { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 0.95; }
+}

@@ -1,0 +1,633 @@
+/* ===== Awards：书法标题 + 统计行 + 扁平概览 + 3D 荣誉滚轮（两行卡） ===== */
+.awards-root {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 入场浮现 */
+.awards-root .awards-head,
+.awards-root .overview,
+.awards-root .wheel {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.awards-root.awards-on .awards-head,
+.awards-root.awards-on .overview,
+.awards-root.awards-on .wheel {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .awards-root .awards-head,
+  .awards-root .overview,
+  .awards-root .wheel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── 标题：eyebrow + 书法体 Awards + 统计行 ── */
+.awards-head {
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 20px; /* 标题与概览整体下移，与顶部导航拉开呼吸 */
+}
+.awards-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #b7a581;
+}
+.awards-title {
+  margin-top: 2px;
+  line-height: 1.25;
+}
+.awards-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 9px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b7a581;
+}
+/* 数字：明显放大 + 金箔质感 */
+.awards-stats b {
+  /* 书法体数字（与标题 Awards 同款字体栈）；书法数字视觉偏小，字号加大补偿 */
+  font-family: '鸿雷板书简体', 'HongLeiBanShu', 'STKaiti', 'KaiTi', '楷体', cursive;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-right: 6px;
+  background: linear-gradient(135deg, #ffeeb8 0%, #e8c268 52%, #c99a2e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* background-clip:text 下 text-shadow 不可见，改用 drop-shadow 投射金光 */
+  filter: drop-shadow(0 2px 8px rgba(233, 190, 90, 0.4));
+}
+.awards-stats i {
+  font-style: normal;
+  margin: 0 12px;
+  color: #c9a96e;
+  opacity: 0.6;
+}
+
+/* ── 概览：上方渐变金线与标题拉开，整体为轻盈文字编排 ── */
+.overview {
+  flex-shrink: 0;
+  /* 左右各外扩 20px（在内容区内边距范围内，不会横向溢出），给三行文字留足空间不换行。
+     仅作用于概览；滚轮为 fit-content，宽度由卡片内容决定，不受影响 */
+  width: calc(100% + 40px);
+  margin: 34px -20px 6px;
+  padding: 22px 26px 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+/* 渐变金线：中间亮、两端渐隐 */
+.overview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 169, 110, 0.35) 18%,
+    rgba(233, 213, 168, 0.75) 50%,
+    rgba(201, 169, 110, 0.35) 82%,
+    transparent 100%
+  );
+}
+.ov-row {
+  display: grid;
+  grid-template-columns: 142px 1fr;
+  align-items: center;
+  column-gap: 16px;
+  padding: 8px 0 8px 55px; /* 左侧 55px：三行整体右移 */
+}
+/* 立体浮雕胶囊：渐变凸起底 + 顶部高光 + 底部厚度暗边 + 外投影浮起
+   点缀色由 --dot-rgb 驱动，与卡片右下角光晕、角色徽章星标同一套色彩语言 */
+.ov-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  justify-self: start;
+  color: #f2e8d4;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--dot-rgb), 0.26) 0%,
+    rgba(var(--dot-rgb), 0.1) 46%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+  border: 1px solid rgba(var(--dot-rgb), 0.5);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.26);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.ov-label::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 1px;
+  transform: rotate(45deg);
+  background: rgba(var(--dot-rgb), 0.95);
+  box-shadow: 0 0 6px rgba(var(--dot-rgb), 0.6);
+}
+/* 三个胶囊统一为同一金色（页面主色，与金线、统计数字呼应） */
+.ov-label.l-gold,
+.ov-label.l-champ,
+.ov-label.l-teal {
+  --dot-rgb: 233, 213, 168;
+}
+/* 圆点分隔的文字列表：比胶囊更轻盈，不与下方荣誉胶囊抢视觉 */
+.ov-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  letter-spacing: 0.015em;
+  color: #d9cdb2;
+}
+.ov-item {
+  white-space: nowrap;
+}
+.ov-item:not(:last-child)::after {
+  content: '·';
+  margin: 0 10px;
+  color: rgba(201, 169, 110, 0.45);
+}
+
+/* ── 3D 滚轮：页面唯一立体容器（有框有底），与扁平概览形成层级对比 ── */
+.wheel {
+  /* 高度需容纳「初始三条」：14(顶缓冲) + 3×118 + 2×30(gap) ≈ 428px */
+  --panel-h: clamp(430px, 54vh, 470px);
+  --row-h: 118px;
+  height: var(--panel-h);
+  flex-shrink: 0;
+  margin-top: -6px; /* 贴近概览，整体上移 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 居中吸附：保证停止滚动后卡片必然对齐到滚轮中心
+     （循环跳变量恰为整数个条目，跳变后仍是合法吸附点，二者不冲突） */
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  perspective: 1000px; /* 透视收敛，纵深感适中不夸张 */
+  border-radius: 18px;
+  border: 1px solid rgba(201, 169, 110, 0.22);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(233, 213, 168, 0.06), transparent 55%),
+    linear-gradient(180deg, rgba(58, 44, 28, 0.32), rgba(36, 26, 16, 0.4));
+  /* 高级金属包边：外层浮起投影 + 内层上下受光描边 + 左右双层金属镶边
+     （左右：暗槽 1px + 亮金描边 1.5px + 暖晕，形成浮雕式金属边框；
+       上下仅做受光/下沉，让视觉重量落在"两边"） */
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 0 0 rgba(40, 30, 16, 0.6),
+    inset -1px 0 0 rgba(40, 30, 16, 0.6),
+    inset 2.5px 0 0 rgba(233, 213, 168, 0.2),
+    inset -2.5px 0 0 rgba(233, 213, 168, 0.2),
+    0 0 0 1px rgba(201, 169, 110, 0.18),
+    0 0 14px rgba(233, 213, 168, 0.1);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.15) 7%, #000 30%, #000 70%, rgba(0, 0, 0, 0.15) 93%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.15) 7%, #000 30%, #000 70%, rgba(0, 0, 0, 0.15) 93%, transparent 100%);
+  scrollbar-width: none;
+}
+.wheel::-webkit-scrollbar {
+  display: none;
+}
+/* 滚动容器建立定位包含块，使两侧竖线固定在其可视区左右内沿 */
+.wheel {
+  position: relative;
+}
+
+/* ── 滚轮两侧设计竖线（金箔光轴导轨）──
+   固定在滚轮可视区左右内沿，不随内容滚动；
+   顶部/底部借 .wheel 的 mask 自然渐隐，形成"悬浮光柱"质感。
+   多层质感：暗色槽缝（底）→ 金属导轨渐变（中）→ 流光带（上）；
+   导轨首/尾各叠一枚菱形卡扣锚点；再叠多层 box-shadow（暗槽 + 亮轴 + 柔晕）。 */
+.wheel::before,
+.wheel::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 3;
+  /* 三层：① 流光带 ② 金属导轨底渐变 ③ 暗色槽缝（铺满，给亮轴留出两侧暗边）
+     ④⑤ 顶部/底部菱形卡扣锚点（极小的径向渐变亮点） */
+  background-image:
+    linear-gradient(180deg, rgba(255, 248, 222, 0) 0%, rgba(255, 248, 222, 0.98) 50%, rgba(255, 248, 222, 0) 100%),
+    linear-gradient(180deg, rgba(233, 213, 168, 0) 0%, rgba(201, 169, 110, 0.55) 7%, rgba(248, 230, 178, 0.95) 50%, rgba(201, 169, 110, 0.55) 93%, rgba(233, 213, 168, 0) 100%),
+    linear-gradient(180deg, rgba(60, 44, 24, 0.55) 0%, rgba(40, 30, 16, 0.4) 50%, rgba(60, 44, 24, 0.55) 100%),
+    radial-gradient(circle at 50% 0%, rgba(255, 248, 222, 0.95) 0 28%, transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(255, 248, 222, 0.95) 0 28%, transparent 30%);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  /* 图层尺寸：流光带高 38%，槽缝与导轨铺满，两枚锚点仅 5px 高居首/尾 */
+  background-size: 100% 38%, 100% 100%, 100% 100%, 100% 5px, 100% 5px;
+  background-position: 0 -44%, 0 0, 0 0, 0 0, 0 100%;
+  /* 多层 box-shadow：外柔晕 + 亮轴芯 + 内暗槽缝（左右各 1px 暗边），叠出金属槽的浮雕厚度 */
+  box-shadow:
+    0 0 14px rgba(233, 213, 168, 0.5),
+    0 0 3px rgba(255, 248, 222, 0.9),
+    inset 1px 0 0 rgba(0, 0, 0, 0.45),
+    inset -1px 0 0 rgba(0, 0, 0, 0.45);
+  animation: railGlow 3.6s ease-in-out infinite;
+}
+.wheel::before {
+  left: 7px;
+}
+.wheel::after {
+  right: 7px;
+  animation-delay: 1.8s;
+}
+@keyframes railGlow {
+  0%   { background-position: 0 -44%, 0 0, 0 0, 0 0, 0 100%; }
+  100% { background-position: 0 144%, 0 0, 0 0, 0 0, 0 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wheel::before,
+  .wheel::after {
+    animation: none;
+    /* 关闭流光，仅保留静态金属导轨渐变 + 槽缝 + 锚点 */
+    background-image:
+      linear-gradient(180deg, rgba(233, 213, 168, 0) 0%, rgba(201, 169, 110, 0.55) 7%, rgba(248, 230, 178, 0.95) 50%, rgba(201, 169, 110, 0.55) 93%, rgba(233, 213, 168, 0) 100%),
+      linear-gradient(180deg, rgba(60, 44, 24, 0.55) 0%, rgba(40, 30, 16, 0.4) 50%, rgba(60, 44, 24, 0.55) 100%),
+      radial-gradient(circle at 50% 0%, rgba(255, 248, 222, 0.95) 0 28%, transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(255, 248, 222, 0.95) 0 28%, transparent 30%);
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 100% 100%, 100% 100%, 100% 5px, 100% 5px;
+    background-position: 0 0, 0 0, 0 0, 0 100%;
+  }
+}
+
+/* 轨道：宽度自适应最长比赛名（全部卡片等宽、单行不换行），整体居中 */
+.wheel-track {
+  list-style: none;
+  margin: 0 auto;
+  /* 循环模式：无需首尾留白，任何滚动位置都有内容 */
+  padding: 0;
+  display: grid;
+  gap: 30px; /* 卡片间距：拉开呼吸感 */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* 行：固定高度参与吸附；卡片承接 3D 变换 */
+.award-snap {
+  height: var(--row-h);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  scroll-snap-align: center; /* 卡片中心对齐滚轮中心 */
+}
+
+/* 卡片：两行（名称 / 荣誉+角色+职责）——国家级暖金调、省级香槟银调，同暖色系不割裂 */
+.award-card {
+  /* 点缀色变量默认值（金卡/银卡各自覆盖） */
+  --dot-rgb: 214, 142, 78;
+  --card-dot: radial-gradient(72% 92% at 100% 100%, rgba(214, 122, 44, calc(0.19 - var(--near, 0) * 0.15)) 0%, transparent 60%);
+  --card-dot2: radial-gradient(58% 74% at 0% 0%, rgba(240, 168, 60, calc(0.15 - var(--near, 0) * 0.12)) 0%, transparent 62%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  height: 100%;
+  padding: 14px 24px 14px 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  overflow: hidden;
+  /* 质感层统一叠加（自上而下共 8 层，配合 background-blend-mode 融合）：
+     ① 暗化层（随 --near 加深） ② 斜向釉面反光
+     ③ 细磨砂颗粒 ④ 粗斑驳云翳
+     ⑤ 点缀色·右下（变量 --card-dot） ⑥ 点缀色·左上（变量 --card-dot2）
+     ⑦ 级别辉光（变量 --card-glow） ⑧ 底色（变量 --card-base） */
+  background-image:
+    linear-gradient(
+      rgba(10, 7, 4, calc(var(--near, 0) * 0.4)),
+      rgba(10, 7, 4, calc(var(--near, 0) * 0.4))
+    ),
+    linear-gradient(
+      112deg,
+      rgba(255, 250, 238, 0.085) 0%,
+      rgba(255, 250, 238, 0) 26%,
+      rgba(255, 250, 238, 0) 62%,
+      rgba(255, 250, 238, 0.04) 100%
+    ),
+    /* 纹理层 ①：细磨砂颗粒（高频，细腻、大幅收敛到 0.16） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.16'/%3E%3C/svg%3E"),
+    /* 纹理层 ②：粗斑驳云翳（低频大块起伏，制造表面不平整的层次） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)' opacity='0.05'/%3E%3C/svg%3E"),
+    var(--card-dot),
+    var(--card-dot2),
+    var(--card-glow),
+    var(--card-base);
+  /* 逐层指定混合模式（顺序对应上面的 8 层）：
+     磨砂用 overlay 咬进底色、斑驳用 soft-light 柔和起伏、
+     两处点缀色与辉光用 screen 叠加发光 —— 纹理真正"长"在材质里，而非浮在表面 */
+  background-blend-mode: normal, normal, overlay, soft-light, screen, screen, screen, normal;
+  /* 边缘厚度（加厚版）：
+     外 近距接触影(立起来) + 中距影 + 远距柔影
+     内 包边 + 顶受光 + 底缘微光 + 底部 3px 侧壁(厚度核心) + 底部下沉暗部 */
+  box-shadow:
+    0 2px 3px -1px rgba(0, 0, 0, 0.55),
+    0 12px 16px -8px rgba(0, 0, 0, 0.48),
+    0 24px 40px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 1px rgba(255, 252, 242, 0.06),
+    inset 0 1px 0 rgba(var(--sheen), 0.15),
+    inset 0 -1px 0 rgba(var(--sheen), 0.07),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.42),
+    inset 0 -18px 26px -12px rgba(0, 0, 0, 0.52);
+  /* 颜色渐变：居中明亮饱和，越远离越暗越灰（与 --near 联动） */
+  filter: brightness(calc(1.05 - var(--near, 0) * 0.26)) saturate(calc(1.3 - var(--near, 0) * 0.35));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, opacity, filter;
+}
+
+/* 国家级：低饱和暖灰褐 + 金色点缀（明度偏高、饱和收敛） */
+.card-nat {
+  --card-glow: radial-gradient(90% 140% at 100% 0%, rgba(233, 220, 190, calc(0.09 - var(--near, 0) * 0.09)) 0%, transparent 55%);
+  --card-base: linear-gradient(160deg, rgba(122, 100, 62, 0.58) 0%, rgba(78, 56, 24, 0.7) 100%);
+  /* 点缀色：赤铜/琥珀，在右下角形成一抹暖调局部色 */
+  --card-dot: radial-gradient(72% 92% at 100% 100%, rgba(206, 128, 62, calc(0.16 - var(--near, 0) * 0.13)) 0%, transparent 60%);
+  --dot-rgb: 214, 142, 78;
+  --sheen: 255, 240, 210;
+  border-color: rgba(226, 210, 178, calc(0.34 - var(--near, 0) * 0.22));
+}
+.card-nat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  /* 底部转为赤铜点缀色，色条自带色彩层次 */
+  background: linear-gradient(180deg, #f2e6cc 0%, #d6c19a 45%, #c08a3e 100%);
+  box-shadow: 0 0 10px rgba(233, 213, 168, calc(0.45 - var(--near, 0) * 0.4));
+  opacity: calc(1 - var(--near, 0) * 0.65);
+}
+
+/* 省级：低饱和中性灰褐 + 香槟银点缀（明度偏高、饱和收敛；质感层与金卡共用） */
+.card-prov {
+  --card-glow: radial-gradient(90% 140% at 100% 0%, rgba(224, 218, 200, calc(0.08 - var(--near, 0) * 0.08)) 0%, transparent 55%);
+  /* 银卡：蓝紫渐变（蓝为主、紫为辅）—— 亮部偏冷银蓝，暗部沉入蓝紫，
+     同属冷色系，既拉开与金卡的色相差、又不跳脱整体 */
+  --card-base: linear-gradient(160deg, rgba(96, 112, 148, 0.58) 0%, rgba(56, 58, 96, 0.72) 100%);
+  /* 点缀色：青瓷/孔雀绿，在右下角形成一抹冷调局部色（与金卡的暖调形成对比） */
+  /* 主点缀：蓝紫（与底色同色系，强化蓝紫氛围） */
+  --card-dot: radial-gradient(72% 92% at 100% 100%, rgba(126, 104, 200, calc(0.17 - var(--near, 0) * 0.13)) 0%, transparent 60%);
+  /* 次点缀：左上角一抹青瓷，与右下蓝紫形成冷调内的冷暖层次 */
+  --card-dot2: radial-gradient(58% 74% at 0% 0%, rgba(96, 178, 186, calc(0.13 - var(--near, 0) * 0.1)) 0%, transparent 62%);
+  --dot-rgb: 116, 196, 182;
+  --sheen: 226, 234, 244;
+  border-color: rgba(206, 216, 230, calc(0.32 - var(--near, 0) * 0.2));
+  /* 银卡单独提饱和：从共用的 1.3 提到 1.75，远离中心时也保留更多彩度 */
+  filter: brightness(calc(1.05 - var(--near, 0) * 0.24)) saturate(calc(1.75 - var(--near, 0) * 0.32));
+}
+.card-prov::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  /* 冷银 → 蓝 → 紫，与蓝紫底色同一色系 */
+  background: linear-gradient(180deg, #eaf2fb 0%, #a8b6d4 42%, #8f7fc4 100%);
+  box-shadow: 0 0 10px rgba(221, 215, 198, calc(0.42 - var(--near, 0) * 0.38));
+  opacity: calc(1 - var(--near, 0) * 0.65);
+}
+
+/* 居中高亮：金卡金色光、银卡香槟银光 */
+.award-snap.is-center .card-nat {
+  border-color: rgba(233, 220, 190, 0.6);
+  box-shadow:
+    0 2px 3px -1px rgba(0, 0, 0, 0.55),
+    0 14px 20px -8px rgba(0, 0, 0, 0.5),
+    0 26px 46px rgba(0, 0, 0, 0.46),
+    0 0 32px rgba(233, 220, 190, 0.16),
+    inset 0 0 0 1px rgba(255, 252, 242, 0.07),
+    inset 0 1px 0 rgba(255, 242, 214, 0.16),
+    inset 0 -1px 0 rgba(255, 242, 214, 0.08),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.42),
+    inset 0 -18px 26px -12px rgba(0, 0, 0, 0.52);
+}
+.award-snap.is-center .card-prov {
+  border-color: rgba(224, 218, 200, 0.55);
+  box-shadow:
+    0 2px 3px -1px rgba(0, 0, 0, 0.55),
+    0 14px 20px -8px rgba(0, 0, 0, 0.5),
+    0 26px 46px rgba(0, 0, 0, 0.46),
+    0 0 32px rgba(224, 218, 200, 0.14),
+    inset 0 0 0 1px rgba(255, 252, 242, 0.07),
+    inset 0 1px 0 rgba(238, 234, 224, 0.14),
+    inset 0 -1px 0 rgba(238, 234, 224, 0.07),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.42),
+    inset 0 -18px 26px -12px rgba(0, 0, 0, 0.52);
+}
+/* 居中淡星水印（金卡金、银卡香槟银） */
+.award-snap.is-center .award-card::after {
+  content: '✦';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 44px;
+  line-height: 1;
+  /* 水印也用点缀色：金卡赤铜、银卡青瓷 */
+  color: rgba(var(--dot-rgb), 0.11);
+  pointer-events: none;
+}
+
+/* 行1：序号 + 比赛名称 */
+.ac-name {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  color: #f2e7cd;
+}
+/* 序号：金卡用金箔、银卡用银箔（与各自的荣誉胶囊同一套金属质感） */
+.ac-no {
+  flex-shrink: 0;
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, #ffeeb8 0%, #e8c268 52%, #c99a2e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.card-prov .ac-no {
+  background: linear-gradient(135deg, #fbfdff 0%, #cfdae6 52%, #9fb0c4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ac-name-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 行2：荣誉胶囊 + 角色胶囊 + 职责 */
+.ac-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.ac-duty {
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+.card-nat .ac-duty {
+  color: #d3c7ac; /* 低饱和暖米灰 */
+}
+.card-prov .ac-duty {
+  color: #b8c2cf; /* 冷调银灰，与冷银底色一致 */
+}
+
+/* 荣誉胶囊：金箔 / 银箔 */
+.ac-tier {
+  display: inline-flex;
+  align-items: center;
+  padding: 3.5px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* 金箔 / 银箔：饱和度拉满（金属质感），明度保持高位不暗沉 */
+.tier-gold {
+  background: linear-gradient(135deg, #ffeeb8 0%, #e8c268 52%, #c99a2e 100%);
+  color: #2a1f0a;
+  box-shadow:
+    0 2px 12px rgba(233, 190, 90, 0.42),
+    inset 0 1px 0 rgba(255, 252, 235, 0.6);
+}
+.tier-silver {
+  background: linear-gradient(135deg, #fbfdff 0%, #cfdae6 52%, #9fb0c4 100%);
+  color: #1c2128;
+  box-shadow:
+    0 2px 12px rgba(190, 205, 225, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+/* 角色胶囊：随级别换色描边 */
+.ac-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3.5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  /* 浅浮雕徽章：渐变凸起底 + 顶部高光 + 底部厚度暗边 + 外投影浮起 */
+  background: linear-gradient(
+    180deg,
+    rgba(var(--role-accent), 0.2) 0%,
+    rgba(var(--role-accent), 0.07) 46%,
+    rgba(0, 0, 0, 0.16) 100%
+  );
+  border: 1px solid rgba(var(--role-accent), 0.55);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.26);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+/* 前置小星：强化"身份徽章"的识别度 */
+.ac-role::before {
+  content: '★';
+  font-size: 8px;
+  line-height: 1;
+  /* 用点缀色（赤铜/青瓷），与卡片右下角光晕呼应 */
+  color: rgba(var(--dot-rgb), 0.95);
+  text-shadow: 0 0 6px rgba(var(--dot-rgb), 0.6);
+}
+.card-nat .ac-role {
+  --role-accent: 233, 213, 168;
+  color: #f4ecd8;
+}
+.card-prov .ac-role {
+  --role-accent: 190, 190, 232;
+  --dot-rgb: 150, 138, 214;
+  color: #eef0fa;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .awards-root .awards-head,
+  .awards-root .overview,
+  .awards-root .wheel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── 窄屏适配 ── */
+@media (max-width: 560px) {
+  .ov-row {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+  .ov-label {
+    margin-bottom: 4px;
+  }
+  .award-snap {
+    padding: 0 6px;
+  }
+  .award-card {
+    padding: 12px 16px;
+  }
+}

@@ -1,0 +1,582 @@
+/* ============ Projects · 数据决策档案袋（循环扇形 / 亮卡暗字） ============ */
+.ps-root {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 6px 0 4px;
+}
+
+.ps-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(600px, 74vh, 720px);
+  perspective: 1800px;
+  transform-style: preserve-3d;
+  perspective-origin: 50% 40%;
+}
+
+/* 卡片槽位：--pos(-1 左翼 / 0 中心 / +1 右翼) */
+.ps-slot {
+  --pos: 0;
+  --ap: 0;
+  --spread: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(880px, 84vw);
+  height: 100%;
+  max-height: 700px;
+  z-index: calc(100 - var(--ap) * 10);
+  transform-origin: center center;
+  transform: translate(-50%, -50%)
+    translateX(calc(var(--pos) * var(--spread)))
+    translateY(calc(var(--ap) * 26px))
+    translateZ(calc(var(--ap) * -130px))
+    rotateY(calc(var(--pos) * -15deg))
+    scale(calc(1 - var(--ap) * 0.13));
+  opacity: calc(1 - var(--ap) * 0.42);
+  filter: brightness(calc(1 - var(--ap) * 0.16))
+    saturate(calc(1 - var(--ap) * 0.35));
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.5s ease, filter 0.5s ease;
+  will-change: transform, opacity;
+}
+
+/* ============ 档案卡：亮色牛皮纸底 + 暗色文字 ============ */
+.archive-card {
+  --ink: #2a241c;
+  --ink-soft: #463c2e;
+  --ink-dim: #6a5a44;
+  --gold: #8a6a2f;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 46px 32px 18px;
+  overflow: visible;
+  /* 立体感：纸面主渐变 + 顶部受光 + 右下阴影区 */
+  background:
+    radial-gradient(130% 84% at 88% -16%, rgba(126, 96, 190, 0.12), transparent 56%),
+    radial-gradient(80% 46% at 4% 0%, rgba(255, 253, 247, 1), transparent 62%),
+    radial-gradient(70% 50% at 100% 100%, rgba(120, 88, 52, 0.3), transparent 60%),
+    linear-gradient(158deg, #f6ecd6 0%, #e9dbbd 48%, #dcc6a0 100%);
+  border: 1px solid rgba(255, 253, 247, 0.75);
+  border-radius: 18px;
+  /* 立体感：外投影 + 内高光 + 内阴影 */
+  box-shadow:
+    0 36px 70px -26px rgba(0, 0, 0, 0.62),
+    0 4px 12px -4px rgba(90, 66, 38, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -2px 6px rgba(140, 108, 66, 0.22);
+  cursor: grab;
+}
+.archive-card:active { cursor: grabbing; }
+
+/* 质感①：磨砂颗粒 + 纸纹（模拟毛玻璃磨砂表面，物理不透出背后） */
+.archive-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(45deg, rgba(150, 118, 72, 0.05) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(150, 118, 72, 0.04) 0 1px, transparent 1px 5px);
+  background-size: 180px 180px, auto, auto;
+  background-blend-mode: overlay, normal, normal;
+  pointer-events: none;
+  z-index: 0;
+}
+/* 质感②：顶部釉面反光（斜向高光带） */
+.archive-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 42%;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(168deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.08) 46%, transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* 质感③：右下折角（破形，纸张翘起） */
+.archive-card .archive-tab { z-index: 3; }
+
+/* 顶部突出标签页（破形）：深底浅字，蓝紫仅作描边点缀 */
+.archive-tab {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 18px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  color: #f1e3c6;
+  background: linear-gradient(120deg, #3a2c1a 0%, #2c2114 100%);
+  border: 1px solid rgba(122, 92, 188, 0.5);
+  box-shadow: 0 6px 14px -5px rgba(20, 12, 4, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  white-space: nowrap;
+}
+/* 细节：标签页底部小尖角（文件夹标签感） */
+.archive-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #2c2114;
+}
+
+/* 左侧打孔活页（破形） */
+.archive-punch {
+  position: absolute;
+  left: 14px;
+  top: 54px;
+  bottom: 48px;
+  width: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 2;
+}
+/* 打孔：真实镂空感（暗底 + 上缘高光） */
+.archive-punch span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 32%, #241a10 0%, #4a3823 78%);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(138, 106, 47, 0.3);
+}
+/* 装订线：紧贴打孔右侧（打孔占 14–24px），与正文保持 28px 间距，绝不重叠 */
+.archive-binding {
+  position: absolute;
+  left: 28px;
+  top: 54px;
+  bottom: 48px;
+  width: 1px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(122, 95, 66, 0.22) 0 5px,
+    transparent 5px 14px
+  );
+  z-index: 1;
+}
+
+/* 右侧细索引条 */
+.archive-index {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  text-align: right;
+  line-height: 1.1;
+  z-index: 2;
+}
+/* 细节：索引条左侧蓝紫细竖线 */
+.archive-index::before {
+  content: '';
+  position: absolute;
+  right: -10px;
+  top: 1px;
+  bottom: 1px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(122, 92, 188, 0.6), transparent);
+}
+.archive-index .idx-year {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+.archive-index .idx-no {
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+}
+
+/* 标题：自适应字号，尽量单行 */
+.archive-title {
+  position: relative;
+  z-index: 2;
+  margin: 4px 0 8px;
+  font-family: '鸿雷板书简体', 'STKaiti', 'KaiTi', serif;
+  font-size: clamp(16px, 1.75vw, 23px);
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: #2f2010;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.archive-meta-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.archive-meta {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* 荣誉书签：像一张贴在卡片上的蓝紫贴纸（柔软、轻微摇摆、可微掀） */
+.archive-bookmark {
+  position: absolute;
+  top: 84px;
+  right: 0;
+  z-index: 6;
+  padding: 7px 16px 7px 14px;
+  background: linear-gradient(118deg, #3a2c1a 0%, #2c2114 60%, #251b10 100%);
+  color: #f1e3c6;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border-radius: 5px;
+  border: 1px solid rgba(122, 92, 188, 0.5);
+  transform-origin: 50% 0;
+  transform: translateX(30%) rotate(-5deg);
+  box-shadow: 0 5px 11px -4px rgba(20, 12, 4, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  animation: ps-sticker-sway 4.6s ease-in-out infinite;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+/* 左上角卷边高光：像贴纸被按上去的一角 */
+.archive-bookmark::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent);
+  border-radius: 5px 0 0 0;
+  pointer-events: none;
+}
+.archive-bookmark:hover {
+  animation-play-state: paused;
+  transform: rotate(-3deg) scale(1.05) translateY(-2px);
+  box-shadow: 0 9px 18px -5px rgba(20, 12, 4, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(122, 92, 188, 0.4);
+}
+@keyframes ps-sticker-sway {
+  0%, 100% { transform: translateX(30%) rotate(-5deg); }
+  50% { transform: translateX(30%) rotate(-3deg); }
+}
+.archive-bookmark-text { display: block; }
+
+/* 决策链路竖轨（内容超高时内部滚动） */
+.archive-body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* 关键：阻止卡内滚到底的越界滚动穿透到外层整页 snap 容器，
+     从而避免"卡片内上下滚不小心切到别的模块" */
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 8px;
+}
+.archive-body::-webkit-scrollbar { display: none; }
+
+/* 滚动到底部标识：底部渐隐 + 跳动箭头，提示可下滑，滚到底自动隐藏 */
+.archive-scroll-hint {
+  position: absolute;
+  left: 42px;
+  right: 8px;
+  bottom: 64px;
+  height: 38px;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(244, 233, 210, 0) 0%,
+    rgba(232, 217, 186, 0.82) 68%,
+    rgba(217, 196, 157, 0.96) 100%
+  );
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+.archive-scroll-hint.is-hidden {
+  opacity: 0;
+}
+.archive-scroll-hint::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid #8a6a2f;
+  border-bottom: 2px solid #8a6a2f;
+  transform: rotate(45deg);
+  margin-bottom: 3px;
+  animation: ps-bounce 1.6s ease-in-out infinite;
+}
+@keyframes ps-bounce {
+  0%, 100% { transform: rotate(45deg) translate(-1px, -1px); opacity: 0.55; }
+  50% { transform: rotate(45deg) translate(2px, 2px); opacity: 1; }
+}
+
+.dl-track {
+  position: relative;
+  padding-top: 2px;
+  margin: 0;
+  list-style: none;
+}
+.dl-track::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(138, 106, 47, 0.32), rgba(122, 92, 188, 0.28));
+}
+.dl-node {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 15px;
+}
+/* 节点：精致静态金珠（无持续动画，不抢视线） */
+.dl-dot {
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #fdf3d8 0%, #d9a93c 48%, #8f651a 100%);
+  box-shadow:
+    0 0 0 2.5px rgba(244, 233, 210, 0.9),
+    0 1px 2px rgba(80, 56, 24, 0.35);
+}
+.dl-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.bd-en {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--ink);
+}
+
+/* 数字：所有数字统一同一红棕色 #9c4a1e；
+   成果类(num-ach)与数据类同色，仅以直线下划线区分 */
+.num-ach {
+  color: #9c4a1e;
+  font-weight: 900;
+  font-size: 1.14em;
+  letter-spacing: 0.01em;
+  /* 直线下划线区分成果类 */
+  text-decoration: underline solid #9c4a1e;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-skip-ink: none;
+}
+.num-data {
+  color: #9c4a1e;
+  font-weight: 900;
+  font-size: 1.14em;
+  letter-spacing: 0.01em;
+}
+
+/* 技术 chip 行 */
+.archive-tech {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(138, 106, 47, 0.28);
+}
+/* chip：深底浅字胶囊（与毛玻璃卡形成层次） */
+.archive-tech .tech-chip {
+  color: #f1e3c6;
+  border-color: rgba(201, 169, 110, 0.42);
+  background: rgba(58, 42, 24, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 3px rgba(40, 26, 12, 0.4);
+}
+.archive-tech .tech-chip:hover {
+  color: #fff3da;
+  border-color: rgba(233, 213, 168, 0.7);
+  background: rgba(74, 54, 30, 0.96);
+}
+
+/* ============ 箭头：回到卡片两侧，贴住卡槽外缘不压卡片 ============ */
+.ps-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(233, 213, 168, 0.4);
+  background: rgba(30, 21, 12, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #f6e7be;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  z-index: 200;
+}
+.ps-arrow:hover {
+  background: rgba(201, 169, 110, 0.24);
+  border-color: rgba(255, 240, 200, 0.8);
+  box-shadow: 0 0 18px -4px rgba(233, 213, 168, 0.5);
+  transform: translateY(-50%) scale(1.07);
+}
+.ps-arrow:active { transform: translateY(-50%) scale(0.93); }
+/* 卡槽宽 min(880px,84vw)，侧翼 spread 300px；箭头再外推到翼卡外侧 */
+.ps-prev { left: max(2px, calc(50% - 46vw)); }
+.ps-next { right: max(2px, calc(50% - 46vw)); }
+
+/* ============ 底部切换：进度轨 + 年份标签 ============ */
+.ps-scroll {
+  --idx: 0;
+  --total: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  margin-top: 24px;
+  opacity: 0.62;
+  transition: opacity 0.35s ease;
+}
+.ps-scroll:hover { opacity: 1; }
+
+.ps-track {
+  position: relative;
+  width: 224px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(60, 42, 24, 0.4);
+  box-shadow: inset 0 1px 2px rgba(40, 26, 12, 0.55);
+  cursor: pointer;
+}
+/* 透明放大热区：方便滚轮/点击命中，视觉仍是 4px 细线 */
+.ps-track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -13px;
+  bottom: -13px;
+}
+/* 已走过进度的暖金填充 */
+.ps-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: calc((var(--idx) + 1) / var(--total) * 100%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(201, 169, 110, 0.55), rgba(233, 213, 168, 0.9));
+  box-shadow: 0 0 8px rgba(233, 213, 168, 0.4);
+  transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* 当前位置发光旋钮 */
+.ps-thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--idx) / (var(--total) - 1) * 100%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #fff3d6, #e9c476 55%, #b8893a);
+  border: 1px solid rgba(255, 248, 230, 0.9);
+  box-shadow: 0 0 14px rgba(233, 213, 168, 0.85), 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: left 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* 流光提示（可滚动） */
+.ps-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 240, 200, 0.65), transparent);
+  transform: translateX(-100%);
+  animation: ps-track-flow 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ps-track-flow {
+  0% { transform: translateX(-100%); }
+  55%, 100% { transform: translateX(100%); }
+}
+
+/* 年份标签：可点击定位，当前高亮 */
+.ps-years {
+  display: flex;
+  gap: 28px;
+}
+.ps-year {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 2px;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(233, 213, 168, 0.42);
+  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+}
+.ps-year:hover { color: rgba(255, 234, 168, 0.75); }
+.ps-year.is-on {
+  color: #ffeaa8;
+  transform: scale(1.14);
+  text-shadow: 0 0 12px rgba(255, 214, 130, 0.6);
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .ps-slot { --spread: 210px; }
+}
+@media (max-width: 700px) {
+  .ps-stage { height: clamp(540px, 76vh, 660px); }
+  .ps-slot {
+    --spread: 120px;
+    width: min(94vw, 880px);
+  }
+  .archive-title {
+    white-space: normal;
+    font-size: 17px;
+  }
+  .archive-bookmark { right: 10px; top: 76px; }
+  .archive-meta { white-space: normal; }
+}
