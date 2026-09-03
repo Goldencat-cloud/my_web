@@ -9,6 +9,7 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from 'react'
 import { TechChip } from '../work/Handmade'
+import SectionHeader from '../work/SectionHeader'
 import '../work/ProjectsSection.css'
 
 /* 数字着色：所有数字同色；gold=true 的成果类额外发光 */
@@ -385,6 +386,14 @@ export default function ProjectsSection({ active }: { active: boolean }) {
 
   return (
     <div className="ps-root">
+      {/* 板块头：全站共享 SectionHeader（编号金线 + 书法标题 + 副标题） */}
+      <SectionHeader
+        className="ps-head"
+        index="04"
+        title="Projects"
+        subtitle="Things I have built — code, design, and everything in between."
+        active={active}
+      />
       <div
         ref={stageRef}
         className="ps-stage"
@@ -431,7 +440,6 @@ export default function ProjectsSection({ active }: { active: boolean }) {
           role="presentation"
           aria-label="Switch project"
         >
-          <span className="ps-fill" />
           <span className="ps-thumb" />
         </div>
         <div className="ps-years">

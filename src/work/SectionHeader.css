@@ -1,0 +1,86 @@
+/* =========================================================
+   共享板块头样式：六个板块的「编号 / 标题 / 副标题」同一套规格
+   —— 只管头部这一层的样式、字号、间距，内容区风格各页自由。
+   ========================================================= */
+
+.sec-head {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── 编号 eyebrow：金线装订 + 页码 + 署名 ── */
+.sec-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  /* 书法标题 line-height 1.25 自带上下内建留白，这里只补很小的额外间隙 */
+  margin-bottom: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #b7a581;
+}
+.sec-eyebrow-line {
+  flex: none;
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.6));
+}
+/* 右侧金线镜像，保证左右对称渐隐 */
+.sec-eyebrow-line--r {
+  transform: scaleX(-1);
+}
+.sec-eyebrow-sep {
+  flex: none;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(201, 169, 110, 0.75);
+}
+.sec-eyebrow-num,
+.sec-eyebrow-tail {
+  white-space: nowrap;
+}
+
+/* ── 书法体标题 ── */
+.sec-title {
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+/* ── 一句话副标题（sentence case 手账体） ── */
+.sec-subtitle {
+  margin: 6px auto 0;
+  max-width: 52ch;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: #b7a581;
+}
+
+/* ── 可选信息行（统计行等） ── */
+.sec-meta {
+  margin-top: 8px;
+}
+
+/* ── 头部 → 正文结构的统一节奏（各页可在自己的 head 类上覆盖） ── */
+.sec-head {
+  margin-bottom: 24px;
+}
+
+/* 窄屏：金线收短，避免 eyebrow 被挤成两行 */
+@media (max-width: 640px) {
+  .sec-eyebrow {
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
+  .sec-eyebrow-line {
+    width: 16px;
+  }
+  .sec-subtitle {
+    font-size: 12px;
+  }
+}

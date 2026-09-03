@@ -28,17 +28,17 @@
   --internship-ink-soft: #d8cbb0; /* 页面次级文字 */
   --internship-faint: #9c8b68; /* 弱信息:灰棕 */
   --internship-faint-dim: #6b5d44; /* 更弱:状态栏 */
-  /* IDE 窗口专属(浅色主题):米白暖灰渐变,与深棕页面背景拉开对比 */
-  --ide-bg-top: #f7f1e4;
-  --ide-bg-bottom: #efe6d2;
-  --ide-bg-files: #f3ecdc;
-  --ide-bg-bar: #fbf7ec;
-  --ide-bg-foot: #efe8d8;
-  --ide-ink: #3a2c18;      /* IDE 正文:深棕 */
-  --ide-ink-dim: #6e5530;  /* IDE 次级文字 */
-  --ide-ink-faint: #9c8b68; /* IDE 弱信息 */
-  --ide-line: rgba(176, 140, 78, 0.28); /* IDE 分隔/边框线 */
-  --ide-ink-teal: #2a7a63; /* IDE 内青色文字(小点缀) */
+  /* IDE 窗口专属(深色主题 · 发光屏):整窗为暗夜里的深色屏,浅字可读 */
+  --ide-bg-top: #221a10;      /* 屏顶:深暖褐 */
+  --ide-bg-bottom: #16100a;   /* 屏底 */
+  --ide-bg-files: #1b140c;    /* 文件树 */
+  --ide-bg-bar: #261d12;      /* 顶栏 */
+  --ide-bg-foot: #130e08;     /* 状态栏 */
+  --ide-ink: #f0e6d4;         /* 正文:暖白 */
+  --ide-ink-dim: #c8b894;     /* 次级文字 */
+  --ide-ink-faint: #9c8b68;   /* 弱信息 */
+  --ide-line: rgba(216, 178, 106, 0.16); /* 分隔/边框线 */
+  --ide-ink-teal: #6fd6c0;    /* IDE 内青色文字(点缀) */
   /* 底色:深暗近黑,微暖 — 页面背景保持不变 */
   --internship-bg: #0d0a06;
   --internship-bg-soft: #1a1308;
@@ -99,46 +99,10 @@
   isolation: isolate;
 }
 
-/* ── 顶部板块头:eyebrow + 书法体标题 + 副标题(居中) ── */
+/* ── 顶部板块头：结构与样式全站共享（SectionHeader），此处只保留本页落位 ── */
 .internship-head {
   text-align: center;
-}
-.head-title {
-  margin: 0 0 6px;
-  line-height: 1.2;
-}
-.head-tagline {
-  margin: 0 0 18px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #8F7E63;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-.head-tagline::before,
-.head-tagline::after {
-  content: '';
-  display: inline-block;
-  width: 24px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.32), transparent);
-  vertical-align: middle;
-  margin: 0 14px;
-}
-
-/* ── 顶部 eyebrow:小而有锚点 ── */
-.page-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 0 0 14px;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.32em;
-  color: var(--internship-ink-soft);
-  animation: marker-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  margin-bottom: 24px;
 }
 .page-eyebrow-mark {
   display: inline-block;
@@ -160,59 +124,27 @@
 }
 
 /* ==========================================================================
-   ─── 公司信息条(正常排版·一行平级,原则 2) ────────────────────────────────
-   公司 / 部门 / 岗位 / 时间 一行平级,公司字体略突出但不过分。
+   ─── 公司信息条：现在是 IDE 窗口的顶部壳（窗内亮色行）
+       不再作独立深棕铭牌浮在浅窗口上方，而是窗口本身的 chrome，
+       与 win-bar / win-body 同一套浅色，消除割裂 ─────────────────────────
    ========================================================================== */
 
-.internship-company {
-  position: relative;
+.iw-company {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
   white-space: nowrap;
-  gap: 6px 20px;
-  margin: 0 0 20px;
-  padding: 14px 26px;
-  border: 1px solid rgba(232, 207, 150, 0.6);
-  border-radius: 14px;
+  gap: 5px 18px;
+  padding: 11px 22px 10px;
+  /* 公司信息带 = 窗口顶部的深色金丝 chrome（深底浅字），
+     作为 IDE 壳的可识别门楣，往下才进入浅色画布 */
   background:
-    radial-gradient(ellipse 60% 130% at 0% 0%, rgba(216, 178, 106, 0.16) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 110% at 100% 100%, rgba(95, 208, 178, 0.07) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(44, 30, 15, 0.94) 0%, rgba(26, 17, 8, 0.96) 100%);
-  box-shadow:
-    0 0 0 1px rgba(176, 140, 78, 0.32),
-    0 0 26px rgba(216, 178, 106, 0.22),
-    0 22px 46px rgba(0, 0, 0, 0.5),
-    0 10px 22px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 235, 190, 0.28),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  animation: company-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
-}
-/* 悬浮:铭牌被"拿起",金光增强 */
-.internship-company:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 0 0 1px rgba(176, 140, 78, 0.4),
-    0 0 34px rgba(216, 178, 106, 0.3),
-    0 26px 54px rgba(0, 0, 0, 0.55),
-    0 12px 26px rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 rgba(255, 235, 190, 0.34),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.55);
-}
-/* 顶部金色高光线:强化上边缘 */
-.internship-company::before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 235, 190, 0.6), transparent);
-  pointer-events: none;
+    radial-gradient(ellipse 80% 130% at 50% -40%, rgba(232, 190, 120, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 120% at 100% 100%, rgba(111, 179, 172, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(44, 30, 15, 0.96) 0%, rgba(30, 20, 10, 0.98) 100%);
+  border-bottom: 1px solid rgba(216, 178, 106, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 235, 190, 0.18);
 }
 .co-name {
   display: inline-flex;
@@ -224,12 +156,18 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  /* 立体感:柔光投影 + 轻微的立体悬浮 */
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 5px rgba(216, 178, 106, 0.35));
+  color: #d8b26a;
+  opacity: 0.9;
   transform: translateY(-0.5px);
 }
 .co-sep svg {
   display: block;
+}
+.co-sep-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(216, 178, 106, 0.7);
 }
 .co-item,
 .co-role,
@@ -237,23 +175,14 @@
 .co-name {
   white-space: nowrap;
 }
-.co-item {
-  /* 部门:优雅衬线体,亮金 + 加粗(信息层级第一) */
-  font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'Times New Roman', serif;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #f0e6d4;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 12px rgba(232, 207, 150, 0.3);
-}
-/* 岗位/时间:次级柔和金,与部门同字号但降一级明度 */
+/* 部门 / 岗位 / 时间：同层级次要信息，颜色完全一致（公司名除外，见 .co-name 书法金字） */
+.co-item,
 .co-role,
 .co-date {
   font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'Times New Roman', serif;
   font-size: 14px;
   font-weight: 600;
-  color: #d8cbb0;
+  color: #dccfb4;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
@@ -266,18 +195,63 @@
 
 .internship-window {
   position: relative;
-  border: 1px solid rgba(216, 178, 106, 0.5);
+  border: 1px solid rgba(232, 190, 120, 0.6);
   border-top: 3px solid var(--internship-gold);
-  border-radius: 10px 10px 12px 12px;
+  border-radius: 14px 14px 16px 16px;
+  /* 整窗 = 夜空里亮起的显示器：
+     屏体做成「中心亮、四边沉」的受光面（vignette 感），不再是平铺深色 */
   background:
-    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(216, 178, 106, 0.12) 0%, transparent 55%),
+    /* ④ 四角暗角 vignette：边缘比中心沉，屏幕才有"一整块面板"的实体感 */
+    radial-gradient(ellipse 118% 92% at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.3) 100%),
+    /* 屏幕中心自发光区（像背光从屏中央透出来） */
+    radial-gradient(ellipse 100% 70% at 50% 8%, rgba(240, 205, 148, 0.16) 0%, transparent 58%),
+    /* 右上角暖金辉光 */
+    radial-gradient(ellipse 60% 50% at 100% -8%, rgba(216, 178, 106, 0.16) 0%, transparent 58%),
+    /* 左下角极淡青光（屏幕冷调溢出，打破沉闷） */
+    radial-gradient(ellipse 55% 45% at 0% 105%, rgba(95, 208, 178, 0.09) 0%, transparent 60%),
     linear-gradient(180deg, var(--ide-bg-top) 0%, var(--ide-bg-bottom) 100%);
   box-shadow:
-    0 26px 64px rgba(0, 0, 0, 0.45),
-    0 10px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    /* ① 屏幕发光晕：明显更大更亮的暖金 + 一圈青色冷光溢出 */
+    0 0 0 1px rgba(232, 190, 120, 0.3),
+    0 0 24px rgba(216, 178, 106, 0.3),
+    0 0 70px rgba(216, 178, 106, 0.22),
+    0 0 130px rgba(95, 208, 178, 0.09),
+    /* ② 浮在夜空里的落地阴影 */
+    0 38px 90px rgba(0, 0, 0, 0.6),
+    0 16px 34px rgba(0, 0, 0, 0.45),
+    /* ③ 屏体边圈：外黑边(bezel) + 内圈细高光，强化「屏」的实体感 */
+    inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 240, 205, 0.3);
   overflow: hidden;
   opacity: 1;
+}
+
+/* 屏面质感层（玻璃反光 + 像素栅格扫描线）：
+   合并在同一个伪元素里叠加，避免多层伪元素互相冲突。
+   扫描线极淡（0.02 量级），只在近看/大屏时隐约可见，远看是细腻的屏纹。 */
+.internship-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    /* 像素栅格：极细水平扫描线，屏幕最本质的纹理 */
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 244, 214, 0.022) 0px,
+      rgba(255, 244, 214, 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    /* 固定在左上角的柔和玻璃光泽（静态，不做横移扫描） */
+    linear-gradient(
+      128deg,
+      rgba(255, 248, 228, 0.07) 0%,
+      rgba(255, 248, 228, 0.035) 16%,
+      transparent 38%
+    );
 }
 /* 滚动到该板块(active)时,播放"软件打开"入场动画 */
 .internship-window.is-active {
@@ -311,6 +285,7 @@
 .internship-window.is-active .win-bar {
   animation: win-section-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
+
 .win-dots {
   display: flex;
   align-items: center;
@@ -341,16 +316,16 @@
   align-items: center;
   gap: 5px;
 }
-.win-path svg { color: #b08c4e; opacity: 0.7; flex-shrink: 0; }
-.win-path-folder { color: #b08c4e; }
-.win-path-slash { color: rgba(176, 140, 78, 0.6); }
-.win-path-file { color: #3a8f78; font-weight: 600; }
+.win-path svg { color: #e0b96e; opacity: 0.85; flex-shrink: 0; }
+.win-path-folder { color: #e0cf9c; }
+.win-path-slash { color: rgba(224, 207, 156, 0.5); }
+.win-path-file { color: #7fd6be; font-weight: 600; }
 .win-counter {
   display: inline-flex;
   align-items: baseline;
   gap: 2px;
   padding: 4px 9px;
-  border: 1px solid rgba(176, 140, 78, 0.4);
+  border: 1px solid rgba(216, 178, 106, 0.4);
   border-radius: 4px;
   background: rgba(216, 178, 106, 0.12);
   font-family: var(--internship-mono);
@@ -358,8 +333,8 @@
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
-.win-counter b { color: #6e5530; font-weight: 700; }
-.win-counter i { font-style: normal; color: #b08c4e; font-size: 10px; padding: 0 1px; }
+.win-counter b { color: #e9d5a8; font-weight: 700; }
+.win-counter i { font-style: normal; color: #d8b26a; font-size: 10px; padding: 0 1px; }
 /* 右上角关闭 ×:悬停变红,模拟真实 IDE 窗口关闭按钮 */
 .win-close {
   display: inline-flex;
@@ -371,15 +346,15 @@
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: #8a6a33;
+  color: #cbb98e;
   cursor: pointer;
   flex-shrink: 0;
-  opacity: 0.75;
+  opacity: 0.85;
   transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
 }
 .win-close:hover {
-  background: rgba(216, 178, 106, 0.28);
-  color: #a0392b;
+  background: rgba(216, 178, 106, 0.22);
+  color: #ff9a80;
   opacity: 1;
 }
 .win-close:active { transform: scale(0.92); }
@@ -387,7 +362,8 @@
 /* ── 窗口主体:左活动栏 + 文件树 + 右内容区 ── */
 .win-body {
   display: grid;
-  grid-template-columns: 38px minmax(190px, 0.32fr) 1fr;
+  /* 文件树列收窄（240px→约 0.22fr），把更多横向让给右侧内容区 */
+  grid-template-columns: 38px minmax(140px, 0.22fr) 1fr;
   min-height: 300px;
 }
 .internship-window.is-active .win-body {
@@ -404,7 +380,7 @@
   align-items: center;
   gap: 2px;
   padding: 6px 0;
-  background: linear-gradient(180deg, #e9dec5 0%, #e0d4b6 100%);
+  background: linear-gradient(180deg, #241c12 0%, #1a140c 100%);
   border-right: 1px solid var(--ide-line);
 }
 .act-btn {
@@ -416,17 +392,17 @@
   height: 38px;
   border: none;
   background: transparent;
-  color: #7d6b49;
+  color: #b8a273;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.72;
   transition: all 0.18s ease;
 }
 .act-btn:hover {
-  color: #4a3517;
+  color: #e9d5a8;
   opacity: 1;
 }
 .act-btn.is-active {
-  color: #4a3517;
+  color: #e9d5a8;
   opacity: 1;
 }
 /* 激活时左侧出现 2px 暖金窄条,完全 VSCode 风格 */
@@ -437,16 +413,16 @@
   top: 6px;
   bottom: 6px;
   width: 2px;
-  background: linear-gradient(180deg, #d8b26a, #8a6a33);
+  background: linear-gradient(180deg, #f0d9a0, #d8b26a);
   border-radius: 0 1px 1px 0;
-  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+  box-shadow: 0 0 8px rgba(216, 178, 106, 0.6);
 }
 /* 激活时图标背景轻染 */
 .act-btn.is-active::after {
   content: '';
   position: absolute;
   inset: 4px 4px 4px 6px;
-  background: rgba(216, 178, 106, 0.18);
+  background: rgba(216, 178, 106, 0.14);
   border-radius: 4px;
   z-index: -1;
 }
@@ -459,11 +435,11 @@
   height: 14px;
   padding: 0 3px;
   border-radius: 7px;
-  background: linear-gradient(180deg, #6e5530, #4a3517);
-  color: #f4e8c8;
+  background: linear-gradient(180deg, #d8b26a, #8a6a33);
+  color: #2a1f10;
   font-family: var(--internship-mono);
   font-size: 8.5px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 14px;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -502,7 +478,7 @@
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.18em;
-  color: #7d6b49;
+  color: #b8a273;
   text-transform: uppercase;
   user-select: none;
 }
@@ -535,7 +511,7 @@
   font-family: var(--internship-mono);
   font-size: 12.5px;
   font-weight: 600;
-  color: #5a4218;
+  color: #cfbe97;
   letter-spacing: 0.02em;
   user-select: none;
 }
@@ -545,8 +521,8 @@
   justify-content: center;
   width: 14px;
   height: 14px;
-  color: #8a6a33;
-  opacity: 0.85;
+  color: #d8b26a;
+  opacity: 0.9;
   transition: transform 0.18s ease;
 }
 .files-chevron-down {
@@ -575,7 +551,7 @@
   text-align: left;
   font-family: var(--internship-mono);
   font-size: 12.5px;
-  color: #7d6b49;
+  color: #b8a273;
   transition: background 0.18s ease, color 0.18s ease;
 }
 /* 树状缩进线:左侧一根 1px 暖色虚线,模拟 IDE 文件树层级 */
@@ -604,28 +580,28 @@
   transform: translateX(-0.5px);
 }
 .file-row:hover {
-  background: rgba(216, 178, 106, 0.18);
-  color: #6e5530;
+  background: rgba(216, 178, 106, 0.12);
+  color: #e9d5a8;
 }
 .file-row.is-active {
-  background: linear-gradient(90deg, rgba(216, 178, 106, 0.32) 0%, rgba(216, 178, 106, 0.08) 100%);
-  color: #4a3517;
-  box-shadow: inset 3px 0 0 rgba(176, 140, 78, 0.9);
+  background: linear-gradient(90deg, rgba(216, 178, 106, 0.22) 0%, rgba(216, 178, 106, 0.05) 100%);
+  color: #f4e8c8;
+  box-shadow: inset 3px 0 0 rgba(240, 217, 160, 0.95);
 }
 .file-row.is-active .file-row-name {
-  color: #5a4218;
+  color: #f7ecd2;
 }
-/* 文件类型颜色:深青绿(0,2,4)/深红(1)/深紫(3)—— 4 种文件类型各不同 */
+/* 文件类型颜色(深底亮字版):青绿/暖金/琥珀/蓝绿 */
 .file-row-icon {
   display: inline-flex;
   flex-shrink: 0;
   opacity: 0.95;
 }
-.file-row:nth-child(odd) .file-row-icon { color: #3a8f78; }   /* Python 绿 */
-.file-row:nth-child(even) .file-row-icon { color: #a07a3a; }  /* 数据/配置棕金 */
-.file-row:nth-child(3) .file-row-icon { color: #9b6b3a; }
-.file-row:nth-child(5) .file-row-icon { color: #5a7a6a; }
-.file-row.is-active .file-row-icon { color: #b08c4e; opacity: 1; }
+.file-row:nth-child(odd) .file-row-icon { color: #7fd6be; }   /* Python 青绿 */
+.file-row:nth-child(even) .file-row-icon { color: #e0b96e; }  /* 数据/配置暖金 */
+.file-row:nth-child(3) .file-row-icon { color: #e0a86e; }
+.file-row:nth-child(5) .file-row-icon { color: #8fbdb0; }
+.file-row.is-active .file-row-icon { color: #f0d9a0; opacity: 1; }
 .file-row-name {
   flex: 1 1 auto;
   min-width: 0;
@@ -641,7 +617,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  color: #8a6a33;
+  color: #cbb98e;
   font-size: 13px;
   line-height: 1;
   opacity: 0;
@@ -649,14 +625,15 @@
   flex-shrink: 0;
 }
 .file-row:hover .file-row-close { opacity: 0.7; }
-.file-row-close:hover { background: rgba(176, 140, 78, 0.25); opacity: 1; }
+.file-row-close:hover { background: rgba(216, 178, 106, 0.22); opacity: 1; }
 /* 运行光标 ▊:当前行右侧呼吸闪烁 */
 .file-row-cursor {
   width: 2px;
   height: 14px;
   border-radius: 1px;
-  background: linear-gradient(180deg, #b08c4e, #6e5530);
-  box-shadow: 0 0 8px rgba(176, 140, 78, 0.5);
+  /* 发光屏上的运行光标：提亮成亮金并加强辉光，像屏幕上真的在闪 */
+  background: linear-gradient(180deg, #ffe9b8, #e0b96e);
+  box-shadow: 0 0 10px rgba(240, 205, 148, 0.85), 0 0 20px rgba(216, 178, 106, 0.45);
   animation: cursor-blink 1.05s steps(1) infinite;
   flex-shrink: 0;
 }
@@ -684,7 +661,7 @@
 .editor-tabs {
   display: flex;
   align-items: stretch;
-  background: linear-gradient(180deg, #ede3cc 0%, #e6d9bd 100%);
+  background: linear-gradient(180deg, #241c12 0%, #1a140c 100%);
   border-bottom: 1px solid var(--ide-line);
   height: 32px;
   overflow-x: auto;
@@ -699,23 +676,23 @@
   height: 100%;
   border: none;
   background: transparent;
-  color: #8a6a33;
+  color: #b8a273;
   font-family: var(--internship-mono);
   font-size: 11.5px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   position: relative;
-  border-right: 1px solid rgba(176, 140, 78, 0.18);
+  border-right: 1px solid rgba(216, 178, 106, 0.12);
   transition: background 0.18s ease, color 0.18s ease;
 }
 .editor-tab:hover {
-  background: rgba(216, 178, 106, 0.18);
-  color: #5a4218;
+  background: rgba(216, 178, 106, 0.12);
+  color: #e9d5a8;
 }
 .editor-tab.is-active {
-  background: linear-gradient(180deg, #f7f1e4 0%, #f0e7d0 100%);
-  color: #4a3517;
+  background: linear-gradient(180deg, #2a2115 0%, #221a10 100%);
+  color: #f4e8c8;
   font-weight: 600;
 }
 /* active tab 上方 1px 暖金高光线 */
@@ -726,20 +703,20 @@
   right: 0;
   top: 0;
   height: 2px;
-  background: linear-gradient(90deg, #b08c4e, #d8b26a 50%, #b08c4e);
-  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+  background: linear-gradient(90deg, #e0b96e, #f0d9a0 50%, #e0b96e);
+  box-shadow: 0 0 8px rgba(216, 178, 106, 0.6);
 }
 .editor-tab-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  opacity: 0.9;
+  opacity: 0.95;
 }
-.editor-tab-icon-0 { color: #3a8f78; }   /* Python 绿 */
-.editor-tab-icon-1 { color: #a07a3a; }   /* 模板棕金 */
-.editor-tab-icon-2 { color: #5a7a6a; }   /* 调度青 */
-.editor-tab-icon-3 { color: #9b6b3a; }   /* QA 红棕 */
+.editor-tab-icon-0 { color: #7fd6be; }   /* Python 青绿 */
+.editor-tab-icon-1 { color: #e0b96e; }   /* 模板暖金 */
+.editor-tab-icon-2 { color: #8fbdb0; }   /* 调度青 */
+.editor-tab-icon-3 { color: #e0a86e; }   /* QA 琥珀 */
 .editor-tab-name {
   white-space: nowrap;
 }
@@ -756,7 +733,7 @@
   opacity: 0.55;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
-.editor-tab-close:hover { background: rgba(176, 140, 78, 0.25); opacity: 1; }
+.editor-tab-close:hover { background: rgba(216, 178, 106, 0.22); opacity: 1; }
 .editor-tab.is-active .editor-tab-close { opacity: 0.85; }
 .editor-tab-add {
   display: inline-flex;
@@ -764,7 +741,7 @@
   justify-content: center;
   width: 28px;
   height: 100%;
-  color: #8a6a33;
+  color: #b8a273;
   font-size: 16px;
   font-weight: 300;
   opacity: 0.7;
@@ -772,7 +749,7 @@
   user-select: none;
   border-right: none;
 }
-.editor-tab-add:hover { color: #4a3517; opacity: 1; }
+.editor-tab-add:hover { color: #e9d5a8; opacity: 1; }
 
 /* ==========================================================================
    ─── 面包屑(workspace › 目录 › 当前文件,带动作图标) ─────────────────────
@@ -782,11 +759,11 @@
   align-items: center;
   gap: 6px;
   padding: 6px 16px 6px 30px;
-  background: linear-gradient(180deg, #f4ebd6 0%, #efe5cb 100%);
-  border-bottom: 1px solid rgba(176, 140, 78, 0.18);
+  background: linear-gradient(180deg, #241c12 0%, #1d160d 100%);
+  border-bottom: 1px solid rgba(216, 178, 106, 0.12);
   font-family: var(--internship-mono);
   font-size: 11px;
-  color: #7d6b49;
+  color: #b8a273;
   letter-spacing: 0.02em;
 }
 .bc-seg {
@@ -794,11 +771,11 @@
   opacity: 0.85;
 }
 .bc-seg.bc-file {
-  color: #5a4218;
+  color: #e9d5a8;
   font-weight: 600;
 }
 .bc-chev {
-  color: rgba(176, 140, 78, 0.55);
+  color: rgba(216, 178, 106, 0.5);
   font-size: 10px;
   user-select: none;
 }
@@ -810,8 +787,8 @@
   width: 22px;
   height: 22px;
   border-radius: 3px;
-  color: #8a6a33;
-  opacity: 0.75;
+  color: #cbb98e;
+  opacity: 0.8;
   cursor: pointer;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
@@ -850,8 +827,8 @@
   overflow: hidden;
   font-family: var(--internship-mono);
   font-size: 11.5px;
-  color: #a07a3a;
-  opacity: 0.5;
+  color: #9c8b68;
+  opacity: 0.62;
   user-select: none;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -865,15 +842,15 @@
   flex-shrink: 0;
 }
 
-/* ── 底部 IDE 终端:浅色面板(与浅色 IDE 统一),深棕文字 + 小面积青色点缀 ── */
+/* ── 底部 IDE 终端:并入深色发光屏,做弱化的一行小终端(深底亮字) ── */
 .editor-terminal {
   margin: 18px 0 0;
-  background: linear-gradient(180deg, #ede3cc 0%, #e6d9bd 100%);
+  background: linear-gradient(180deg, #1d160d 0%, #171009 100%);
   border-top: 1px solid var(--ide-line);
   border-radius: 0;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 2px 6px rgba(120, 96, 52, 0.08);
+    inset 0 1px 0 rgba(255, 235, 190, 0.06),
+    inset 0 2px 8px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   white-space: nowrap;
 }
@@ -885,7 +862,7 @@
   display: flex;
   align-items: stretch;
   height: 30px;
-  border-bottom: 1px solid rgba(176, 140, 78, 0.22);
+  border-bottom: 1px solid rgba(216, 178, 106, 0.14);
   background: linear-gradient(180deg, rgba(216, 178, 106, 0.12) 0%, transparent 100%);
   font-family: var(--internship-mono);
   font-size: 10.5px;
@@ -902,20 +879,20 @@
   align-items: center;
   gap: 6px;
   padding: 0 12px;
-  border-right: 1px solid rgba(176, 140, 78, 0.18);
-  color: #8a6a33;
+  border-right: 1px solid rgba(216, 178, 106, 0.12);
+  color: #b8a273;
   cursor: pointer;
   white-space: nowrap;
   position: relative;
   transition: background 0.15s ease, color 0.15s ease;
 }
 .editor-terminal .term-tab:hover {
-  background: rgba(216, 178, 106, 0.18);
-  color: #5a4218;
+  background: rgba(216, 178, 106, 0.12);
+  color: #e9d5a8;
 }
 .editor-terminal .term-tab.is-active {
-  color: #4a3517;
-  background: linear-gradient(180deg, rgba(247, 241, 228, 0.6) 0%, transparent 100%);
+  color: #f4e8c8;
+  background: linear-gradient(180deg, rgba(216, 178, 106, 0.14) 0%, transparent 100%);
 }
 .editor-terminal .term-tab.is-active::before {
   content: '';
@@ -924,10 +901,10 @@
   right: 0;
   top: 0;
   height: 2px;
-  background: linear-gradient(90deg, #b08c4e, #d8b26a 50%, #b08c4e);
-  box-shadow: 0 0 6px rgba(216, 178, 106, 0.5);
+  background: linear-gradient(90deg, #e0b96e, #f0d9a0 50%, #e0b96e);
+  box-shadow: 0 0 8px rgba(216, 178, 106, 0.55);
 }
-.editor-terminal .term-tab-inactive { color: #a07a3a; opacity: 0.85; }
+.editor-terminal .term-tab-inactive { color: #9c8b68; opacity: 0.85; }
 .editor-terminal .term-tab-count {
   display: inline-flex;
   align-items: center;
@@ -936,8 +913,8 @@
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: rgba(176, 140, 78, 0.22);
-  color: #6e5530;
+  background: rgba(216, 178, 106, 0.18);
+  color: #e9d5a8;
   font-size: 9.5px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -948,12 +925,12 @@
   align-items: center;
   justify-content: center;
   width: 30px;
-  color: #8a6a33;
+  color: #b8a273;
   opacity: 0.7;
   cursor: pointer;
   transition: opacity 0.15s ease, background 0.15s ease;
 }
-.editor-terminal .term-tabs-action:hover { opacity: 1; background: rgba(216, 178, 106, 0.18); }
+.editor-terminal .term-tabs-action:hover { opacity: 1; background: rgba(216, 178, 106, 0.14); }
 
 /* 兼容旧结构:term-header 现在退化为不可见(若有人在别处用) */
 .editor-terminal .term-header {
@@ -976,19 +953,19 @@
   opacity: 0.85;
 }
 .editor-terminal .term-header-title {
-  color: #6e5530;
+  color: #e9d5a8;
   font-weight: 700;
   letter-spacing: 0.2em;
 }
 .editor-terminal .term-header-close {
   margin-left: auto;
-  color: var(--ide-ink-faint);
+  color: #9c8b68;
   font-size: 13px;
   line-height: 1;
   user-select: none;
   transition: color 0.18s;
 }
-.editor-terminal .term-header-close:hover { color: var(--ide-ink-teal); }
+.editor-terminal .term-header-close:hover { color: #6fd6c0; }
 /* 终端命令行 */
 .editor-terminal .term-line {
   display: flex;
@@ -1016,7 +993,7 @@
   opacity: 0.9;
 }
 .editor-terminal .term-cmd-file {
-  color: #6e5530;
+  color: #f0d9a0;
   font-weight: 700;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
@@ -1030,8 +1007,8 @@
   margin-left: 1px;
   vertical-align: -2px;
   border-radius: 1px;
-  background: var(--ide-ink-teal);
-  box-shadow: 0 0 8px rgba(42, 122, 99, 0.6);
+  background: #6fd6c0;
+  box-shadow: 0 0 8px rgba(111, 214, 192, 0.6);
   animation: ec-blink 0.9s steps(1) infinite;
 }
 .editor-terminal .term-status {
@@ -1049,8 +1026,9 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--ide-ink-teal);
-  box-shadow: 0 0 8px rgba(42, 122, 99, 0.6);
+  /* 终端运行指示点：提亮 + 青绿辉光，给屏面一点"正在跑"的生气 */
+  background: #8ff0da;
+  box-shadow: 0 0 10px rgba(111, 214, 192, 0.9), 0 0 22px rgba(95, 208, 178, 0.4);
   animation: term-dot 1.2s ease-in-out infinite;
 }
 /* 逐字敲出关键帧 */
@@ -1083,11 +1061,11 @@
   line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #b8914f 0%, #8a6a33 45%, #5a4218 100%);
+  background: linear-gradient(180deg, #f0d9a0 0%, #e0b96e 40%, #c99a52 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.6));
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
   user-select: none;
 }
 /* 分隔线 */
@@ -1121,6 +1099,24 @@
   margin-bottom: 22px;
   padding-left: 16px;
 }
+/* 正文上方的深底数据徽章：压小一号，避免数字块太大压过正文节奏 */
+.editor-stats .stat-badge {
+  padding: 7px 14px;
+  border-radius: 11px;
+  gap: 3px;
+  box-shadow:
+    0 5px 14px rgba(0, 0, 0, 0.4),
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 235, 190, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+.editor-stats .stat-badge .sb-value {
+  font-size: clamp(15px, 1.6vw, 19px);
+}
+.editor-stats .stat-badge .sb-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
 
 /* 正文:数据加粗高亮 */
 .editor-text {
@@ -1132,10 +1128,13 @@
   margin: 0;
   padding-left: 16px;
   padding-bottom: 8px;
+  /* 像素自发光：屏幕上的字有极淡的 bloom，区别于"印在纸上"的墨字 */
+  text-shadow: 0 0 10px rgba(240, 226, 196, 0.1);
 }
 .card-key {
-  color: #8a6a33;
+  color: #e3bd74;
   font-weight: 700;
+  text-shadow: 0 0 10px rgba(216, 178, 106, 0.18);
 }
 
 /* ==========================================================================
@@ -1260,9 +1259,9 @@
    ========================================================================== */
 /* 中屏:进一步收紧字号/间距,公司条保持单行 */
 @media (max-width: 1440px) {
-  .internship-company {
+  .iw-company {
     gap: 5px 14px;
-    padding: 12px 20px;
+    padding: 11px 20px 10px;
   }
   .co-item { font-size: 13.5px; }
   .co-role,
@@ -1271,7 +1270,7 @@
 
 @media (max-width: 980px) {
   .win-body {
-    grid-template-columns: 32px minmax(140px, 0.32fr) 1fr;
+    grid-template-columns: 32px minmax(120px, 0.22fr) 1fr;
   }
   .win-content { padding: 0; }
   .win-editor { padding: 18px 18px 0; }
@@ -1282,15 +1281,11 @@
 }
 
 @media (max-width: 720px) {
-  .head-tagline { margin-bottom: 12px; font-size: 11px; }
-  .head-tagline::before,
-  .head-tagline::after { display: none; }
-  .internship-company {
+  .iw-company {
     flex-wrap: wrap;
     white-space: normal;
-    padding: 13px 16px;
+    padding: 11px 16px 10px;
     gap: 4px 12px;
-    border-radius: 12px;
   }
   .co-item,
   .co-role,
@@ -1356,7 +1351,6 @@
   .internship-window *,
   .internship-window *::before,
   .internship-window *::after,
-  .internship-company,
   .internship-head,
   .page-eyebrow {
     animation: none !important;

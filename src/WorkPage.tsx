@@ -6,6 +6,7 @@ import InternshipSection from './work/InternshipSection'
 import AwardsSection from './work/AwardsSection'
 import ProjectsSection from './work/ProjectsSection'
 import CampusSection from './work/CampusSection'
+import SectionHeader from './work/SectionHeader'
 import PillNavButton from './work/PillNavButton'
 
 export type WorkSectionId =
@@ -232,12 +233,11 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
         const isAwards = s.id === 'awards'
         const isProjects = s.id === 'projects'
         const isActivities = s.id === 'activities'
-        const padTop = isAbout ? 'pt-[max(15vh,8rem)]' : 'pt-[max(12vh,6.5rem)]'
-        // activities：卷体只占约 80% 屏高、上下留呼吸；卷内 scroll-snap 逐段翻，
-        // 卷外仍随外层整屏吸附切换模块（不锁死，保持模块切换手感）。
-        const sectionSizing = isActivities
-          ? 'min-h-screen snap-start pt-20 pb-16'
-          : `min-h-screen snap-start ${padTop} pb-16`
+        const padTop = isAbout ? 'pt-[max(15vh,8rem)]' : 'pt-[max(9vh,4.5rem)]'
+        // 上下留白对称 + 内容垂直居中（safe center：内容超高时自动退回顶部对齐，不会被裁），
+        // 保证每屏的视觉重心落在画面中心，标题只作"重心之上的引子"而不抢戏。
+        const padBottom = isAbout ? 'pb-16' : 'pb-[max(9vh,4.5rem)]'
+        const sectionSizing = `min-h-screen snap-start ${padTop} ${padBottom}`
         return (
           <section
             key={s.id}
@@ -251,35 +251,18 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
                 : 'translate-y-[7vh] rotate-x-5 scale-[0.96] opacity-0'
             }`}
           >
-            <div className="flex w-full max-w-5xl flex-1 flex-col">
+            <div className="flex w-full max-w-5xl flex-1 flex-col [justify-content:safe_center]">
               {!isAbout && !isInternship && !isAwards && !isProjects && !isActivities && (
-                <>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[11px] font-medium uppercase tracking-[0.32em] text-[#E9D5A8]/70">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="h-px flex-1 bg-gradient-to-r from-[#C9A96E]/40 to-transparent" />
-                    <span className="text-[11px] uppercase tracking-[0.22em] text-[#B7A581]">
-                      Zhihan Zhang · Work
-                    </span>
-                  </div>
-
-                  <h2
-                    className={`mt-3 text-center text-[clamp(22px,2.8vw,34px)] font-semibold leading-[1.1] tracking-tight text-[#F2E7CD] ${
-                      isActive ? 'section-enter' : ''
-                    }`}
-                  >
-                    {s.title}
-                  </h2>
-                  <p
-                    className={`mx-auto mt-2 max-w-xl text-center text-[13px] leading-relaxed text-[#B7A581] md:text-sm ${
-                      isActive ? 'section-enter' : ''
-                    }`}
-                    style={{ animationDelay: isActive ? '0.07s' : undefined }}
-                  >
-                    {s.description}
-                  </p>
-                </>
+                <SectionHeader
+                  className="w-full"
+                  index={String(i + 1).padStart(2, '0')}
+                  title={s.title}
+                  subtitle={s.description}
+                  active={isActive}
+                  /* 无正文板块：标题固定在重心之上，下方留白由 auto 吸收，
+                     与各页「标题在上、主体居中」的节奏保持一致 */
+                  style={{ marginBottom: 'auto' }}
+                />
               )}
 
               {isAbout && (
@@ -289,28 +272,27 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
               )}
 
               {isAwards && (
-                <div className="flex min-h-0 w-full flex-1 flex-col items-center">
+                <div className="flex min-h-0 w-full flex-1 flex-col items-center [justify-content:safe_center]">
                   <AwardsSection active={isActive} />
                 </div>
               )}
 
               {isInternship && (
-                <div
-                  className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
-                  style={{ width: '60vw' }}
-                >
-                  <InternshipSection active={isActive} />
+                <div className="flex min-h-0 w-full flex-1 flex-col items-center [justify-content:safe_center]">
+                  <div className="w-[min(60vw,1080px)] max-w-full">
+                    <InternshipSection active={isActive} />
+                  </div>
                 </div>
               )}
 
               {isProjects && (
-                <div className="flex min-h-0 w-full flex-1 flex-col items-center">
+                <div className="flex min-h-0 w-full flex-1 flex-col items-center [justify-content:safe_center]">
                   <ProjectsSection active={isActive} />
                 </div>
               )}
 
               {isActivities && (
-                <div className="flex h-full min-h-0 w-full flex-1 flex-col items-center justify-center">
+                <div className="flex min-h-0 w-full flex-1 flex-col items-center [justify-content:safe_center]">
                   <CampusSection active={isActive} />
                 </div>
               )}

@@ -1,16 +1,24 @@
 /* ============ Projects · 数据决策档案袋（循环扇形 / 亮卡暗字） ============ */
 .ps-root {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 6px 0 4px;
+  padding: 6px 0 2px;
+}
+
+/* ── 板块头：结构与样式全站共享（SectionHeader），此处只保留本页落位 ── */
+.ps-head {
+  margin-bottom: 24px;
 }
 
 .ps-stage {
   position: relative;
   width: 100%;
-  height: clamp(600px, 74vh, 720px);
+  height: clamp(520px, 62vh, 660px);
   perspective: 1800px;
   transform-style: preserve-3d;
   perspective-origin: 50% 40%;
@@ -391,24 +399,26 @@
   color: var(--ink);
 }
 
-/* 数字：所有数字统一同一红棕色 #9c4a1e；
-   成果类(num-ach)与数据类同色，仅以直线下划线区分 */
+/* 数字：统一到暖金/古铜坐标（P2：去掉偏红的 #9c4a1e），
+   卡片为奶油浅底，故用足够深的古铜金保证可读；成果类以直线下划线区分 */
 .num-ach {
-  color: #9c4a1e;
+  color: #9a6b1f;
   font-weight: 900;
   font-size: 1.14em;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, 0.4);
   /* 直线下划线区分成果类 */
-  text-decoration: underline solid #9c4a1e;
+  text-decoration: underline solid #b98a2f;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
   text-decoration-skip-ink: none;
 }
 .num-data {
-  color: #9c4a1e;
+  color: #9a6b1f;
   font-weight: 900;
   font-size: 1.14em;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, 0.4);
 }
 
 /* 技术 chip 行 */
@@ -474,21 +484,18 @@
   align-items: center;
   gap: 11px;
   margin-top: 24px;
-  opacity: 0.62;
-  transition: opacity 0.35s ease;
 }
-.ps-scroll:hover { opacity: 1; }
 
 .ps-track {
   position: relative;
   width: 224px;
-  height: 4px;
+  height: 2px;
   border-radius: 999px;
-  background: rgba(60, 42, 24, 0.4);
-  box-shadow: inset 0 1px 2px rgba(40, 26, 12, 0.55);
+  background: rgba(60, 42, 24, 0.35);
+  box-shadow: inset 0 1px 1px rgba(40, 26, 12, 0.5);
   cursor: pointer;
 }
-/* 透明放大热区：方便滚轮/点击命中，视觉仍是 4px 细线 */
+/* 透明放大热区：方便滚轮/点击命中，视觉仍是 2px 细线 */
 .ps-track::before {
   content: '';
   position: absolute;
@@ -497,48 +504,20 @@
   top: -13px;
   bottom: -13px;
 }
-/* 已走过进度的暖金填充 */
-.ps-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: calc((var(--idx) + 1) / var(--total) * 100%);
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(201, 169, 110, 0.55), rgba(233, 213, 168, 0.9));
-  box-shadow: 0 0 8px rgba(233, 213, 168, 0.4);
-  transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-/* 当前位置发光旋钮 */
+/* 当前位置：极淡暖金细线（无渐变高光、无光晕），只作可读指针 */
 .ps-thumb {
   position: absolute;
   top: 50%;
   left: calc(var(--idx) / (var(--total) - 1) * 100%);
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 35% 30%, #fff3d6, #e9c476 55%, #b8893a);
-  border: 1px solid rgba(255, 248, 230, 0.9);
-  box-shadow: 0 0 14px rgba(233, 213, 168, 0.85), 0 1px 3px rgba(0, 0, 0, 0.4);
+  background: radial-gradient(circle at 38% 32%, #fff3d6, #d9b463 60%, #a97e3a);
+  border: 1px solid rgba(255, 248, 230, 0.7);
+  box-shadow: 0 0 4px rgba(233, 213, 168, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: left 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-/* 流光提示（可滚动） */
-.ps-track::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255, 240, 200, 0.65), transparent);
-  transform: translateX(-100%);
-  animation: ps-track-flow 3.4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes ps-track-flow {
-  0% { transform: translateX(-100%); }
-  55%, 100% { transform: translateX(100%); }
-}
-
 /* 年份标签：可点击定位，当前高亮 */
 .ps-years {
   display: flex;

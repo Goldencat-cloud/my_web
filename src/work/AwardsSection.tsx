@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Handwriting } from './Handmade'
+import SectionHeader from './SectionHeader'
 import './AwardsSection.css'
 
 /* ================= 奖学金 / 证书 / 语言（固定顶部） ================= */
@@ -231,18 +232,20 @@ export default function AwardsSection({ active }: { active: boolean }) {
 
   return (
     <div className={`awards-root ${active ? 'awards-on' : ''}`}>
-      {/* 标题：书法体 Awards + 获奖统计（校级聚合，不逐条罗列） */}
-      <div className="awards-head">
-        <span className="awards-eyebrow">03 Zhihan Zhang · Work</span>
-        <div className="awards-title">
-          <Handwriting active={active} fontSize="clamp(34px, 4.2vw, 54px)">
-            Awards
-          </Handwriting>
-        </div>
-        <p className="awards-stats">
-          <b>4</b> National <i>·</i> <b>4</b> Provincial <i>·</i> Multiple University-Level Honors
-        </p>
-      </div>
+      {/* 标题：书法体 Awards + 获奖统计（校级聚合，不逐条罗列）
+          复用全站共享板块头，统计行走 meta 插槽 */}
+      <SectionHeader
+        className="awards-head"
+        index="03"
+        title="Awards"
+        active={active}
+        meta={
+          <p className="awards-stats">
+            <b>4</b> National <i>·</i> <b>4</b> Provincial <i>·</i> Multiple University-Level
+            Honors
+          </p>
+        }
+      />
 
       {/* 顶部概览：奖学金 / 证书 / 语言 */}
       <Overview />

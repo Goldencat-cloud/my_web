@@ -187,39 +187,6 @@
     linear-gradient(270deg, rgba(226, 192, 120, 0.045), transparent 7%);
 }
 
-/* ---------- ④ 釉面反光：112° 斜向窄带，缓慢横移（在 .cs-paper 内，随撕边一起被裁） ---------- */
-.cs-glaze {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: 14px;
-  mix-blend-mode: screen;
-  overflow: hidden;
-}
-.cs-glaze::before {
-  content: '';
-  position: absolute;
-  top: -30%;
-  bottom: -30%;
-  left: -40%;
-  width: 180%;
-  background: linear-gradient(
-    112deg,
-    transparent 40%,
-    rgba(255, 241, 208, 0.06) 46%,
-    rgba(255, 248, 224, 0.15) 50%,
-    rgba(255, 241, 208, 0.06) 54%,
-    transparent 60%
-  );
-  filter: blur(3px);
-  animation: cs-glaze-sweep 11s ease-in-out infinite alternate;
-}
-@keyframes cs-glaze-sweep {
-  from { transform: translateX(-14%); }
-  to { transform: translateX(14%); }
-}
-
 /* ---------- 上下木轴：卷边破形 + ④ 金属各向异性高光 + E 两端渐隐进夜色 ---------- */
 .cs-rod {
   position: absolute;
@@ -307,6 +274,8 @@
   position: relative;
   z-index: 2;
   flex: 1 1 auto;
+  /* 与上方缎带封口拉开稳定空隙（不受卷内滚动吸附影响） */
+  margin-top: 22px;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -321,37 +290,15 @@
 .cs-body {
   position: relative;
   z-index: 2;
-  padding: 18px clamp(22px, 5vw, 54px) 8px;
+  padding: 6px clamp(22px, 5vw, 54px) 8px;
 }
 
-/* 标题区 */
-.cs-head { text-align: center; margin-bottom: 16px; scroll-snap-align: start; }
-.cs-eyebrow {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--gold, #e2c078);
-  opacity: 0.85;
-}
-/* 书法大标题：与其他页面一致（Handwriting 默认暖金 + 轻微光晕），不做金箔渐变/浮雕 */
-.cs-title-wrap {
-  margin-top: 2px;
-}
-.cs-title {
-  display: block;
-  font-size: clamp(44px, 7vw, 72px);
-  line-height: 1.05 !important;   /* 覆盖 Handwriting 内联 1.25，收紧与 eyebrow 的间距 */
-}
-/* 副标题：通用模块简介，单行不换行、居中、留足上下呼吸 */
-.cs-subtitle {
-  margin: 9px auto 0;
-  white-space: nowrap;
-  font-size: 13.5px;
-  letter-spacing: 0.04em;
-  line-height: 1.65;
-  color: var(--ink-dim, #c3ad86);
-}
+/* 标题区：结构与样式全站共享（SectionHeader），此处只保留卷内吸附锚点与落位 */
+.cs-head { margin-bottom: 24px; scroll-snap-align: start; }
+/* 首段不再额外补上内边距，保证「标题 → 正文 24px」与其它板块同一节奏 */
+.cs-segment:first-of-type { padding-top: 0; }
+/* 卷纸半透明，副标题沿用卷轴自己的暖色一档，保证纸面可读性 */
+.cs-head .sec-subtitle { color: var(--ink-dim, #c3ad86); }
 
 /* ---------- 角色卷段（无方框，仅细青线分隔） ---------- */
 .cs-segment {
@@ -702,17 +649,16 @@
 
 .cs-scroll { transform-origin: top center; }
 .cs-on .cs-scroll { animation: scroll-unfurl 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.cs-on .cs-title { animation: ink-in 0.7s ease 0.18s both; }
+.cs-on .cs-head .sec-title { animation: ink-in 0.7s ease 0.18s both; }
 .cs-on .cs-seal-node { animation: seal-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both; }
 
 /* 尊重 prefers-reduced-motion：直接终态 + 关闭吸附，允许普通滚动 */
 @media (prefers-reduced-motion: reduce) {
   .cs-scroll,
-  .cs-title,
+  .cs-head .sec-title,
   .cs-seal-node,
   .cs-signet-frame { animation: none !important; clip-path: none !important; }
   .cs-on .cs-signet::before { animation: none !important; opacity: 0.5 !important; }
-  .cs-glaze::before { animation: none !important; }
   .cs-viewport { scroll-snap-type: none !important; scroll-behavior: auto !important; }
 }
 

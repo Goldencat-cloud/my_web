@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { HANDWRITING_FONT, Handwriting, StickerTag, WashiTape } from './Handmade'
+import SectionHeader from './SectionHeader'
 
 /* 高分主修课（按分数从高到低） */
 const COURSES = [
@@ -222,7 +223,7 @@ export default function AboutSection({ active }: { active: boolean }) {
   }
 
   return (
-    <div className="relative -mt-[35px] grid min-h-full w-full grid-rows-[auto_1fr_auto] justify-items-center px-4 pb-6 pt-[max(calc(8vh-20px),calc(4.5rem-20px))] lg:px-6">
+    <div className="relative -mt-[35px] grid min-h-full w-full grid-rows-[auto_1fr_auto] justify-items-center px-4 pb-6 pt-[max(calc(7vh-22px),calc(4rem-22px))] lg:px-6">
       {/* 背景大号水印文字：ABOUT ME，透明微弱，作为板块背景装饰 */}
       <span
         className={`about-watermark ${active ? 'is-active' : ''}`}
@@ -235,13 +236,20 @@ export default function AboutSection({ active }: { active: boolean }) {
         className="row-start-1 flex w-full max-w-[800px] flex-col items-center"
       >
         {/* ── 签名区：单列居中堆叠的金字塔结构 ── */}
-        {/*        签名（主）→ 氛围字（次）→ ENTP 贴纸 + 性格关键词（一组） */}
+        {/*  eyebrow（01）→ 签名（主）→ 氛围字（次）→ ENTP 贴纸 + 性格关键词（一组） */}
         <div className="flex w-full flex-col items-center">
+          {/* 板块编号 eyebrow（01）：签名主题不设书法板块标题，仅补页码 */}
+          <SectionHeader
+            className="about-head"
+            index="01"
+            active={active}
+            style={{ marginBottom: 0 }}
+          />
           {/* 签名：书法大字 + 墨迹落笔 + 小牛皮纸底 */}
           <div
             className="section-card"
             style={{
-              marginTop: '-10px',
+              marginTop: active ? '6px' : '6px',
               animationDelay: active ? '0s' : undefined,
             }}
           >

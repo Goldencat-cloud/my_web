@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Handwriting, TechChip } from './Handmade'
+import { TechChip } from './Handmade'
+import SectionHeader from './SectionHeader'
 import './CampusSection.css'
 
 const hi = (s: string): ReactNode => <span className="num-data">{s}</span>
@@ -65,10 +66,7 @@ export default function CampusSection({ active = false }: { active?: boolean }) 
       <div className="cs-aura" aria-hidden="true" />
       <div className="cs-scroll">
         {/* 半透羊皮纸：独立无 transform 层，承载 backdrop-filter 与撕边 mask（方案 A + B） */}
-        <div className="cs-paper" aria-hidden="true">
-          {/* 112° 釉面反光窄带，随纸面撕边一起被裁 */}
-          <span className="cs-glaze" />
-        </div>
+        <div className="cs-paper" aria-hidden="true" />
         {/* iridescent paper sheen + silk thread (decorative, fixed, do not scroll) */}
         <div className="cs-shimmer" aria-hidden="true" />
         <div className="cs-silk" aria-hidden="true" />
@@ -85,19 +83,15 @@ export default function CampusSection({ active = false }: { active?: boolean }) 
         {/* 卷体内容区：框内 scroll-snap 逐段吸附翻页（标题→角色1→角色2→落款） */}
         <div className="cs-viewport">
           <div className="cs-body">
-            {/* 标题区（吸附锚点 start）：书法大标题 Campus + 通用模块副标题 */}
-            <header className="cs-head">
-              <div className="cs-eyebrow">05 · Campus</div>
-              <div className="cs-title-wrap">
-                <Handwriting
-                  className="cs-title"
-                  fontSize="clamp(44px, 7vw, 72px)"
-                >
-                  Campus
-                </Handwriting>
-              </div>
-              <p className="cs-subtitle">Roles, research, and on-campus service</p>
-            </header>
+            {/* 标题区（吸附锚点 start）：留在卷轴内部，但与全站共享同一套头部规格 */}
+            <SectionHeader
+              className="cs-head"
+              titleClassName="cs-title"
+              index="05"
+              title="Campus"
+              subtitle="Roles, research, and on-campus service"
+              active={active}
+            />
 
             {/* 角色卷段（吸附锚点 start） */}
             {roles.map((seg) => (

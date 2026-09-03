@@ -1796,7 +1796,8 @@
   }
 }
 /* 两行便利贴：错落圆角 + 一角折角（像被掀起的手撕纸角），打破规整长条。
-   质感：深黑到深蓝的沉稳渐变 + 金色光斑 + 顶部受光、底部深影的立体层次 */
+   质感：深黑到深蓝/深紫的沉稳渐变 + 金色光斑 + 顶部受光、底部深影的立体层次。
+   蓝紫与页面背景顶部的蓝紫渐变呼应，属有意设计，勿改冷色（A2 撤回） */
 .edu-row-odd {
   rotate: -1.1deg;
   /* 四角错落圆角：左上大、右上小、右下大、左下小，像手撕便利贴 */
@@ -1986,27 +1987,27 @@
   50%      { transform: rotate(0deg); }
   75%      { transform: rotate(-6deg); }
 }
-/* 奇数列流苏：呼应深蓝便利贴，穗束偏冷蓝金 */
+/* 奇数列流苏：呼应古铜便利贴，穗束偏暖铜金（A2：不再偏冷蓝） */
 .edu-row-odd .edu-fringe {
-  background: radial-gradient(circle at 35% 35%, #eaf0ff 0%, #aabcf0 55%, #7186c9 100%);
+  background: radial-gradient(circle at 35% 35%, #fbeed2 0%, #e3be7e 55%, #b98f4a 100%);
   box-shadow:
-    inset -1px -1px 2px rgba(40, 55, 100, 0.5),
+    inset -1px -1px 2px rgba(90, 62, 24, 0.5),
     0 1px 2px rgba(0, 0, 0, 0.4);
 }
 .edu-row-odd .edu-fringe::before {
   background:
-    linear-gradient(180deg, rgba(224, 234, 255, 0.95) 0%, rgba(168, 190, 235, 0.85) 55%, rgba(120, 140, 200, 0.5) 100%),
+    linear-gradient(180deg, rgba(252, 238, 205, 0.95) 0%, rgba(227, 190, 126, 0.85) 55%, rgba(185, 143, 74, 0.5) 100%),
     repeating-linear-gradient(
       90deg,
       transparent 0 2px,
-      rgba(235, 242, 255, 0.5) 2px 3px,
+      rgba(255, 244, 216, 0.5) 2px 3px,
       transparent 3px 5px,
-      rgba(170, 195, 245, 0.45) 5px 6px,
+      rgba(222, 184, 118, 0.45) 5px 6px,
       transparent 6px 8px
     );
 }
 .edu-row-odd .edu-fringe::after {
-  background: linear-gradient(180deg, rgba(170, 195, 240, 0.8), rgba(170, 195, 240, 0.4));
+  background: linear-gradient(180deg, rgba(227, 190, 126, 0.8), rgba(227, 190, 126, 0.4));
 }
 
 .edu-row:hover {

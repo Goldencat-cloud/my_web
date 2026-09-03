@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Handwriting, StatBadge } from './Handmade'
+import SectionHeader from './SectionHeader'
 import './InternshipSection.css'
 
 type Seg = { t: string; b?: boolean }
@@ -183,95 +184,41 @@ export default function InternshipSection({ active }: { active: boolean }) {
 
   return (
     <div className="internship-stage">
-      {/* ── 顶部板块头:eyebrow + 书法体大标题 + 副标题 ── */}
-      <header className="internship-head">
-        <div className="page-eyebrow">
-          <span className="page-eyebrow-mark" />
-          <span className="page-eyebrow-num">02</span>
-          <span className="page-eyebrow-tail">Zhihan Zhang · Work · internship</span>
-        </div>
-        <h2 className="head-title">
-          <Handwriting active={active} fontSize="clamp(30px, 3.4vw, 42px)">Internship</Handwriting>
-        </h2>
-        <p className="head-tagline">Work experience and the lessons I learned on the job.</p>
-      </header>
+      {/* ── 顶部板块头: eyebrow + 书法体大标题 + 副标题（全站共享 SectionHeader） ── */}
+      <SectionHeader
+        className="internship-head"
+        index="02"
+        title="Internship"
+        subtitle="Work experience and the lessons I learned on the job."
+        active={active}
+      />
 
-      {/* ── 公司信息条:公司 / 部门 / 岗位 / 时间,一行平级紧凑 ── */}
-      <div className="internship-company">
-        <span className="co-name">
-          <Handwriting active={active} fontSize="clamp(21px, 1.5vw, 26px)">ByteDance</Handwriting>
-        </span>
-        <span className="co-sep" aria-hidden>
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none">
-            <defs>
-              <linearGradient id="coSepGold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f6e3b4" />
-                <stop offset="55%" stopColor="#d8b26a" />
-                <stop offset="100%" stopColor="#8a6a33" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="url(#coSepGold)"
-              stroke="#5a4218"
-              strokeOpacity="0.45"
-              strokeWidth="0.7"
-            />
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="none"
-              stroke="#ffffff"
-              strokeOpacity="0.35"
-              strokeWidth="0.8"
-              transform="translate(0.6,-0.8)"
-            />
-          </svg>
-        </span>
-        <span className="co-item">Data Circulation Center (DCC)</span>
-        <span className="co-sep" aria-hidden>
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none">
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="url(#coSepGold)"
-              stroke="#5a4218"
-              strokeOpacity="0.45"
-              strokeWidth="0.7"
-            />
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="none"
-              stroke="#ffffff"
-              strokeOpacity="0.35"
-              strokeWidth="0.8"
-              transform="translate(0.6,-0.8)"
-            />
-          </svg>
-        </span>
-        <span className="co-item co-role">Data Operations - Project Management</span>
-        <span className="co-sep" aria-hidden>
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none">
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="url(#coSepGold)"
-              stroke="#5a4218"
-              strokeOpacity="0.45"
-              strokeWidth="0.7"
-            />
-            <path
-              d="M12 2.5l2.6 5.7 6.2.6-4.6 4.2 1.3 6.1L12 16.2l-5.5 2.9 1.3-6.1L3.2 8.8l6.2-.6z"
-              fill="none"
-              stroke="#ffffff"
-              strokeOpacity="0.35"
-              strokeWidth="0.8"
-              transform="translate(0.6,-0.8)"
-            />
-          </svg>
-        </span>
-        <span className="co-item co-date">Oct 2025 — Mar 2026</span>
-      </div>
-
-      {/* ── 编辑器窗口壳 ── */}
+      {/* 编辑器窗口：把公司信息做成窗口自己的壳（顶部标签行），
+          不再用独立的深棕铭牌条，避免公司条与浅色窗口割裂 */}
       <div className={`internship-window ${active ? 'is-active' : ''}`}>
+        {/* 窗口标题栏 = 公司信息壳:公司 + 部门 · 岗位 · 时间（+ 右上收口装饰） */}
+        <div className="iw-company">
+          <span className="co-name">
+            <Handwriting
+              active={active}
+              fontSize="clamp(21px, 1.5vw, 26px)"
+              color="#e9d5a8"
+              shadow="0 1px 2px rgba(0,0,0,0.6), 0 0 14px rgba(226,190,120,0.3)"
+            >
+              ByteDance
+            </Handwriting>
+          </span>
+          <span className="co-sep" aria-hidden>
+            <svg viewBox="0 0 8 8" width="7" height="7" fill="none">
+              <circle cx="4" cy="4" r="2.1" fill="#d8b26a" />
+            </svg>
+          </span>
+          <span className="co-item">Data Circulation Center (DCC)</span>
+          <span className="co-sep co-sep-dot" aria-hidden />
+          <span className="co-item co-role">Data Operations - Project Management</span>
+          <span className="co-sep co-sep-dot" aria-hidden />
+          <span className="co-item co-date">Oct 2025 — Mar 2026</span>
+        </div>
         {/* 窗口标题栏:三个圆点 + 路径 + 窗口控制按钮 */}
         <header className="win-bar">
           <div className="win-dots" aria-hidden>
@@ -414,8 +361,8 @@ export default function InternshipSection({ active }: { active: boolean }) {
                     <Handwriting
                       active={active}
                       fontSize="clamp(24px, 2.3vw, 32px)"
-                      color="#6e5530"
-                      shadow="0 1px 1px rgba(255,255,255,0.5), 0 0 10px rgba(110,85,48,0.18)"
+                      color="#e9d5a8"
+                      shadow="0 1px 2px rgba(0,0,0,0.6), 0 0 12px rgba(216,178,106,0.28)"
                     >
                       {current.title}
                     </Handwriting>

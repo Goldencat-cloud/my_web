@@ -31,33 +31,19 @@
   }
 }
 
-/* ── 标题：eyebrow + 书法体 Awards + 统计行 ── */
+/* ── 头部：结构与样式全站共享（SectionHeader） ──
+   不再额外下移：整块内容由外层垂直居中，标题自然落在视觉重心之上 */
 .awards-head {
-  text-align: center;
-  flex-shrink: 0;
-  margin-top: 20px; /* 标题与概览整体下移，与顶部导航拉开呼吸 */
+  margin-top: 0;
 }
-.awards-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: #b7a581;
-}
-.awards-title {
-  margin-top: 2px;
-  line-height: 1.25;
-}
+/* 统计行：走 meta 插槽，语气/字号与副标题统一（sentence case 手账体） */
 .awards-stats {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 9px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  line-height: 1.6;
   color: #b7a581;
 }
 /* 数字：明显放大 + 金箔质感 */
@@ -89,8 +75,9 @@
   /* 左右各外扩 20px（在内容区内边距范围内，不会横向溢出），给三行文字留足空间不换行。
      仅作用于概览；滚轮为 fit-content，宽度由卡片内容决定，不受影响 */
   width: calc(100% + 40px);
-  margin: 34px -20px 6px;
-  padding: 22px 26px 0;
+  /* 标题 → 概览金线 → 概览文字，合计与各页「标题到正文 24px」同一节奏 */
+  margin: 12px -20px 6px;
+  padding: 12px 26px 0;
   display: flex;
   flex-direction: column;
   position: relative;
