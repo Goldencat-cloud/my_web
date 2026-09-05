@@ -25,3 +25,47 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Uploaded resume files (do not commit generated data)
+data/resumes/
+data/resume-meta.json
+data/resume-*.yaml
+
+# 运行时鉴权数据（含邀请码、会话 token、访问者 IP/UA，绝不入库）
+data/tokens.json
+data/sessions.json
+data/access-log.jsonl
+data/tmp/
+
+# Server error logs
+*.err
+*.log
+
+# ---- 根目录开发截图 / 临时散文件 / 一次性脚本 ----
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.yaml
+/*.yml
+/*.md
+/*.py
+/*.ps1
+/*.mjs
+
+# 本地 IDE / 浏览器工具缓存（勿提交）
+.codebuddy/
+.playwright-cli/
+audit-shots/
+v3-after-click.yml
+
+# 误生成的占位文件
+/--full-page
+
+# public 中的历史设计参考图（非站点运行时素材，不进部署基线）
+public/ref-design-*.png

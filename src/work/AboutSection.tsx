@@ -1,47 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { HANDWRITING_FONT, Handwriting, StickerTag, WashiTape } from './Handmade'
 import SectionHeader from './SectionHeader'
+import { useLang } from '../i18n/LanguageContext'
+import { useResumeData } from '../data/useResumeData'
 
-/* 高分主修课（按分数从高到低） */
-const COURSES = [
-  { name: 'Statistics', score: 98 },
-  { name: 'Big Data Technology', score: 96 },
-  { name: 'MySQL', score: 96 },
-  { name: 'Machine Learning', score: 95 },
-  { name: 'Data Mining', score: 92 },
-  { name: 'Python', score: 92 },
-  { name: 'Text Mining', score: 91 },
-]
-
-/* 教育经历：本科 + 硕士在读 */
-interface EduEntry {
-  time: string
-  school: string
-  degree: string
-  gpa?: number
-  current?: boolean
-}
-
-const EDUCATION: EduEntry[] = [
-  {
-    time: 'Sep 2022 – Jun 2026',
-    school: 'Shaanxi Normal University (211) · Big Data Management & Application',
-    degree: 'B.M.',
-    gpa: 3.84,
-  },
-  {
-    time: 'Sep 2026 – Present',
-    school: 'Shaanxi Normal University (211) · Business Administration',
-    degree: 'M.M.',
-    current: true,
-  },
-]
-
-/* 自述（定位句） */
-const ABOUT_TEXT =
-  'Product-minded and value-driven, I draw on hands-on experience across the data pipeline and AI modeling to turn every insight into a data product the business can actually use.'
-
-/* GPA 金徽章：弹入发光 + 数字 count-up 滚到目标值 */
 function GpaBadge({
   value,
   active,
@@ -60,7 +22,6 @@ function GpaBadge({
       return
     }
     let raf = 0
-    /* 等徽章弹入后再开始滚动 */
     const timer = window.setTimeout(() => {
       const start = performance.now()
       const tick = (now: number) => {
@@ -86,16 +47,12 @@ function GpaBadge({
   )
 }
 
-/* 分数阶梯色：95+ 最亮金，92–94 次亮，91 卡其 —— 一眼看出高分扎堆 */
 function scoreColor(score: number): string {
   if (score >= 95) return '#F6E3B4'
   if (score >= 92) return '#D4B57A'
   return '#B7A581'
 }
 
-
-/* 课程分数：入场时先显示「··」占位，再 count-up 落到目标分数，
-   强化「档案加载中 → 揭晓分数」的趣味节奏 */
 function ScoreNum({
   score,
   active,
@@ -133,7 +90,6 @@ function ScoreNum({
   return <>{val === null ? '··' : val}</>
 }
 
-/* 核心课程：横向自动滚动（无缝循环），展示全部课程，不限制个数 */
 function CourseRow({
   items,
   active,
@@ -148,13 +104,11 @@ function CourseRow({
   const posRef = useRef(0)
   const dirRef = useRef(1)
 
-  // 自动横向滚动：用原生 scrollLeft 平滑推进，到末尾折返循环。
-  // 滚动状态存 ref，避免重渲染重置位置；只操作 scrollLeft，不动 transform，防止文字被裁切。
   useEffect(() => {
     const el = scrollerRef.current
     if (!el) return
     let raf = 0
-    const speed = 0.55 // 每帧推进像素
+    const speed = 0.55
     const tick = () => {
       const max = el.scrollWidth - el.clientWidth
       if (max <= 0) return
@@ -203,13 +157,15 @@ function CourseRow({
 }
 
 export default function AboutSection({ active }: { active: boolean }) {
+  const { tx } = useLang()
+  const data = useResumeData()
+  const about = data.about
+
   const avatarVideoRef = useRef<HTMLVideoElement>(null)
-  // 视频元数据就绪后：跳到跳过前两帧的时间点再播放，避免开头提示/花屏帧闪现
   const startAvatarVideo = () => {
     const v = avatarVideoRef.current
     if (!v) return
     try {
-      // 先暂停再跳到目标时间，seek 完成后恢复播放，确保稳定跳过前两帧
       v.pause()
       v.currentTime = 0.12
       const resume = () => {
@@ -224,123 +180,92 @@ export default function AboutSection({ active }: { active: boolean }) {
 
   return (
     <div className="relative -mt-[35px] grid min-h-full w-full grid-rows-[auto_1fr_auto] justify-items-center px-4 pb-6 pt-[max(calc(7vh-22px),calc(4rem-22px))] lg:px-6">
-      {/* 背景大号水印文字：ABOUT ME，透明微弱，作为板块背景装饰 */}
-      <span
-        className={`about-watermark ${active ? 'is-active' : ''}`}
-        aria-hidden="true"
-      >
+      <span className={`about-watermark ${active ? 'is-active' : ''}`} aria-hidden="true">
         ABOUT ME
       </span>
+
       <div
         key={active ? 'play' : 'idle'}
         className="row-start-1 flex w-full max-w-[800px] flex-col items-center"
       >
-        {/* ── 签名区：单列居中堆叠的金字塔结构 ── */}
-        {/*  eyebrow（01）→ 签名（主）→ 氛围字（次）→ ENTP 贴纸 + 性格关键词（一组） */}
         <div className="flex w-full flex-col items-center">
-          {/* 板块编号 eyebrow（01）：签名主题不设书法板块标题，仅补页码 */}
           <SectionHeader
             className="about-head"
             index="01"
             active={active}
             style={{ marginBottom: 0 }}
           />
-          {/* 签名：书法大字 + 墨迹落笔 + 小牛皮纸底 */}
+
           <div
             className="section-card"
             style={{
-              marginTop: active ? '6px' : '6px',
+              marginTop: '6px',
               animationDelay: active ? '0s' : undefined,
             }}
           >
             <div className="sig-paper relative inline-flex items-center gap-3">
-              {/* 左右两角金色小星：金芯 + 蓝紫柔光 + 入场脉冲 */}
               <span
-                className={`sig-star absolute -left-2 -top-2 select-none text-[14px] ${
-                  active ? 'is-active' : ''
-                }`}
+                className={`sig-star absolute -left-2 -top-2 select-none text-[14px] ${active ? 'is-active' : ''}`}
                 aria-hidden="true"
               >
                 ✦
               </span>
               <span
-                className={`sig-star absolute -right-2 -top-2 select-none text-[14px] ${
-                  active ? 'is-active' : ''
-                }`}
+                className={`sig-star absolute -right-2 -top-2 select-none text-[14px] ${active ? 'is-active' : ''}`}
                 aria-hidden="true"
               >
                 ✦
               </span>
-              <div
-                style={
-                  active
-                    ? { animation: 'ink-drop 0.8s ease-out 0.12s both' }
-                    : undefined
-                }
-              >
-                {/* 局部蓝黄笔触：包一层容器，用伪元素在标题边缘点缀两道手绘笔触 */}
+              <div style={active ? { animation: 'ink-drop 0.8s ease-out 0.12s both' } : undefined}>
                 <span className="resume-brush">
                   <Handwriting
                     active={active}
                     fontSize="clamp(38px, 5.6vw, 64px)"
                     className="block"
                   >
-                    Zhihan&apos;s Resume
+                    {tx(about.header.title)}
                   </Handwriting>
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 氛围字（紧贴签名下方，作为次级信息） */}
           <p
-            className={`mt-3 text-[10px] uppercase tracking-[0.55em] text-[#B7A581] ${
-              active ? 'section-enter' : ''
-            }`}
+            className={`mt-3 text-[10px] uppercase tracking-[0.55em] text-[#B7A581] ${active ? 'section-enter' : ''}`}
             style={{ animationDelay: active ? '0.55s' : undefined }}
           >
-            Data Product <span className="mx-1 text-[#C9A96E]">·</span> AI
+            {tx(about.header.atmosphere)}
           </p>
 
-          {/* 细分隔线：分隔氛围字与性格特质 */}
           <span
             className="mt-3 h-px w-16 bg-gradient-to-r from-transparent via-[#C9A96E]/45 to-transparent"
             aria-hidden="true"
           />
 
-          {/* ENTP 贴纸 + 性格关键词（一组，居中成行） */}
           <div
-            className={`mt-3 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 ${
-              active ? 'section-enter' : ''
-            }`}
+            className={`mt-3 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 ${active ? 'section-enter' : ''}`}
             style={{ animationDelay: active ? '0.7s' : undefined }}
           >
-            <StickerTag text="ENTP" rotate="-4deg" className="entp-sticker" />
+            <StickerTag text={about.mbti} rotate="-4deg" className="entp-sticker" />
             <p
               className="text-[13px] tracking-[0.02em] text-[#B7A581] lg:text-[13.5px]"
               style={{ fontFamily: HANDWRITING_FONT }}
             >
-              Proactive · Pragmatic · Results-driven
+              {tx(about.personalityTags)}
             </p>
           </div>
         </div>
       </div>
 
-      {/* ── 主体组：自述 + 教育 + 课程，整体居于屏幕中段（35%-55% 区域） ── */}
       <div
         key={`body-${active ? 'play' : 'idle'}`}
         className="about-body-card row-start-2 mt-[2.5vh] flex w-full max-w-[800px] flex-col items-stretch self-start lg:mt-[3.5vh]"
       >
-        {/* A 真噪声层：feTurbulence 分形噪声，无周期性网格感，取代原来的圆点阵噪点。
-            独立 DOM 节点承载（::before/::after 已被底色与描边占用），
-            与纸底共用同一张噪声边缘 mask，边缘一起被啃噬。 */}
         <span className="about-paper-grain" aria-hidden="true" />
-        {/* ── 自述：相框内嵌（flex 并排，不悬浮） ── */}
         <div className="relative flex w-full translate-y-[8px] items-start gap-5">
-          {/* 内嵌相框：人物动态视频，作为流式布局元素与文字并排 */}
           <div className="about-frame hidden w-[120px] shrink-0 lg:block" style={{ marginTop: '-16px' }}>
             <video
-              src="/about-avatar.mp4"
+              src={about.avatar.src}
               autoPlay
               muted
               loop
@@ -360,69 +285,50 @@ export default function AboutSection({ active }: { active: boolean }) {
             className="absolute -right-9 -top-6 z-10 hidden !h-[30px] !w-[132px] opacity-90 lg:block"
           />
           <p
-            className={`about-bio min-w-0 flex-1 text-justify text-[15px] font-normal leading-[1.85] tracking-[0.005em] text-[#F2E7CD]/92 lg:text-[15.5px] ${
-              active ? 'section-enter' : ''
-            }`}
+            className={`about-bio min-w-0 flex-1 text-justify text-[15px] font-normal leading-[1.85] tracking-[0.005em] text-[#F2E7CD]/92 lg:text-[15.5px] ${active ? 'section-enter' : ''}`}
             style={{ animationDelay: active ? '1.1s' : undefined }}
           >
-            {ABOUT_TEXT}
+            {tx(about.bio)}
           </p>
         </div>
 
-        {/* ── 教育两行：实色便利贴，横向溢出卡片边界（上面那行额外加长，保证专业一行完整） ── */}
         <div className="relative mt-2 -mx-14 w-[calc(100%+112px)] space-y-3 lg:mt-3">
-          {EDUCATION.map((e, i) => (
+          {about.education.map((e, i) => (
             <div
-              key={e.time}
-              className={`edu-row section-card flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 ${
-                i === 0 ? 'edu-row-odd' : 'edu-row-even'
-              }`}
+              key={i}
+              className={`edu-row section-card flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 ${i === 0 ? 'edu-row-odd' : 'edu-row-even'}`}
               style={{ animationDelay: active ? `${1.25 + i * 0.12}s` : undefined }}
             >
-              {/* 左：时间（金标尺：小竖条 + 金色等宽，像刻度） */}
               <span className="edu-time shrink-0 whitespace-nowrap font-mono text-[13.5px] font-semibold tracking-tight text-[#F6E3B4] lg:text-[14px]">
-                {e.time}
+                {tx(e.time)}
               </span>
-              {/* 中：学校（暖白正文，不换行 + 允许按内容宽，保证专业一行完整） */}
               <span className="edu-school flex-1 whitespace-nowrap px-1 text-[13.5px] leading-[1.5] tracking-[0.01em] text-[#EDE1C4] lg:text-[14px]">
-                {e.school}
+                {tx(e.school)}
               </span>
-              {/* 右：学位（金色骑缝章徽）+ GPA 金币 */}
               <span className="flex shrink-0 items-center gap-x-3">
                 <span className="edu-degree whitespace-nowrap text-[14px] font-semibold tracking-[0.02em] text-[#E9D5A8]">
-                  {e.degree}
+                  {tx(e.degree)}
                 </span>
                 {e.gpa !== undefined && (
                   <GpaBadge value={e.gpa} active={active} delay={1.4} />
                 )}
               </span>
-              {/* 尾部流苏：书签式垂穗，两张便利贴都带 */}
               <span className="edu-fringe" aria-hidden="true" />
-              {/* 左侧面钢笔笔尖：横向从卡片里面伸出，尖端朝左。
-                  颜色随卡片：第一张（奇数列）蓝色、第二张（偶数列）黄色，与各自流苏同色 */}
               <span className="edu-nib" aria-hidden="true">
                 <svg viewBox="0 0 60 40" fill="none">
-                  {/* 金属片外轮廓：右侧宽（插入卡片）→ 左侧收成尖，整体用 currentColor（CSS按奇偶上色） */}
                   <path
                     d="M2 20 C 10 12, 20 7, 30 6 H56 C58 6 59 7 59 9 V31 C59 33 58 34 56 34 H30 C20 33 10 28 2 20 Z"
                     fill="currentColor"
                     stroke="#00000045"
                     strokeWidth="1.3"
                   />
-                  {/* 顶部受光高光带（半透明白，模拟金属反光） */}
                   <path d="M4 18 C 10 12, 20 8, 30 7 H56 C 50 12, 40 15, 4 18 Z" fill="#ffffff" opacity="0.45" />
-                  {/* 笔尖两侧的反光边（细高光） */}
                   <path d="M4 20 C 8 15, 12 12, 18 10" fill="none" stroke="#ffffff" strokeWidth="0.9" opacity="0.5" strokeLinecap="round" />
-                  {/* 下半暗部（制造厚度） */}
                   <path d="M4 22 C 12 27, 22 32, 32 33 H56 C 46 33, 24 27, 4 22 Z" fill="#000000" opacity="0.18" />
-                  {/* 中缝：从尖端向右开到底 */}
                   <line x1="4" y1="20" x2="30" y2="20" stroke="#00000060" strokeWidth="1.2" />
-                  {/* 气孔：中缝右端的圆孔，带内暗 */}
                   <circle cx="33" cy="20" r="2.3" fill="#00000030" stroke="#00000055" strokeWidth="0.8" />
                   <circle cx="32.4" cy="19.4" r="0.9" fill="#ffffff" opacity="0.5" />
-                  {/* 尖端两瓣的细微高光 */}
                   <path d="M4 20 L 8 15 M 4 20 L 8 25" stroke="#ffffff" strokeWidth="0.7" opacity="0.35" strokeLinecap="round" />
-                  {/* 竖纹纹理：几道垂直金属刻纹，只落在笔尖金属片区域内 */}
                   <g clipPath="url(#nibClip)" opacity="0.4">
                     <line x1="14" y1="0" x2="14" y2="40" stroke="#000000" strokeWidth="0.8" />
                     <line x1="20" y1="0" x2="20" y2="40" stroke="#000000" strokeWidth="0.8" />
@@ -439,10 +345,8 @@ export default function AboutSection({ active }: { active: boolean }) {
               </span>
             </div>
           ))}
-          {/* 两个笔尖中心的手绘爱心：一笔蓝色、一笔黄色，位于两卡之间偏左 */}
           <span className="edu-heart" aria-hidden="true">
             <svg viewBox="0 0 40 40" fill="none">
-              {/* 蓝色一笔：左瓣轮廓（起笔带点停顿，线粗不均，手绘感） */}
               <path
                 d="M20 32 C 16 30, 7 25, 7 17 C 7 12, 11 8, 15 9 C 18 10, 19 12, 20 15 C 21 12, 22 10, 25 9 C 29 8, 33 12, 33 17 C 33 25, 24 30, 20 32"
                 fill="none"
@@ -451,7 +355,6 @@ export default function AboutSection({ active }: { active: boolean }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              {/* 黄色一笔：右半轮廓，从底部起笔向上收，与蓝笔微微错开、线条抖动 */}
               <path
                 d="M20 32 C 21 33, 24 31, 27 28 C 30 25, 33 22, 33 17 C 33 13, 30 9, 27 9.5 C 25 10, 22.5 12, 21 14"
                 fill="none"
@@ -464,17 +367,18 @@ export default function AboutSection({ active }: { active: boolean }) {
           </span>
         </div>
 
-        {/* ── 核心课程：横排一行放满即止（不放 +n），与上方两个模块同宽左对齐 ── */}
         <div className="mt-3 w-full lg:mt-4">
           <p
-            className={`courses-heading mb-3.5 text-[11px] font-medium uppercase tracking-[0.38em] text-[#C9A96E] ${
-              active ? 'section-enter' : ''
-            }`}
+            className={`courses-heading mb-3.5 text-[11px] font-medium uppercase tracking-[0.38em] text-[#C9A96E] ${active ? 'section-enter' : ''}`}
             style={{ animationDelay: active ? '1.5s' : undefined }}
           >
-            Core Courses
+            {tx(about.courses.title)}
           </p>
-          <CourseRow items={COURSES} active={active} delay={1.55} />
+          <CourseRow
+            items={about.courses.items.map((c) => ({ name: tx(c.name), score: c.score }))}
+            active={active}
+            delay={1.55}
+          />
         </div>
       </div>
     </div>

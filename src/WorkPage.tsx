@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import SiteBackdrop from './Backdrop'
-import { NavContactLinksRich } from './ContactWidgets'
 import AboutSection from './work/AboutSection'
 import InternshipSection from './work/InternshipSection'
 import AwardsSection from './work/AwardsSection'
@@ -8,6 +7,9 @@ import ProjectsSection from './work/ProjectsSection'
 import CampusSection from './work/CampusSection'
 import SectionHeader from './work/SectionHeader'
 import PillNavButton from './work/PillNavButton'
+import NavMenu from './work/NavMenu'
+import { useLang } from './i18n/LanguageContext'
+import type { Localized } from './i18n/types'
 
 export type WorkSectionId =
   | 'about'
@@ -19,57 +21,73 @@ export type WorkSectionId =
 
 interface WorkSection {
   id: WorkSectionId
-  label: string
-  title: string
-  description: string
+  /** 导航胶囊标签 */
+  label: Localized<string>
+  /** 板块标题（仅 Learning 走 SectionHeader 兜底渲染） */
+  title: Localized<string>
+  description: Localized<string>
 }
 
+/* 译文底稿：MEMORY/resume-bilingual.md · 07 全局 UI 文案 */
 const SECTIONS: WorkSection[] = [
   {
     id: 'about',
-    label: 'About',
-    title: 'About Me',
-    description:
-      'A short introduction to who I am — my story, my values, and what drives me.',
+    label: { en: 'About', zh: '关于我' },
+    title: { en: 'About Me', zh: '关于我' },
+    description: {
+      en: 'A short introduction to who I am — my story, my values, and what drives me.',
+      zh: '关于我的简短介绍——我的故事、我的价值观，以及驱动我前行的东西。',
+    },
   },
   {
     id: 'internship',
-    label: 'Internship',
-    title: 'Internship',
-    description: 'Work experience and the lessons I learned on the job.',
+    label: { en: 'Internship', zh: '实习' },
+    title: { en: 'Internship', zh: '实习经历' },
+    description: {
+      en: 'Work experience and the lessons I learned on the job.',
+      zh: '工作经历，以及我在岗位上学到的东西。',
+    },
   },
   {
     id: 'awards',
-    label: 'Awards',
-    title: 'Awards',
-    description: 'Certificates, honors, and recognitions I have earned.',
+    label: { en: 'Awards', zh: '荣誉' },
+    title: { en: 'Awards', zh: '荣誉奖项' },
+    description: {
+      en: 'Certificates, honors, and recognitions I have earned.',
+      zh: '我获得的证书、荣誉与认可。',
+    },
   },
   {
     id: 'projects',
-    label: 'Projects',
-    title: 'Projects',
-    description:
-      'Things I have built — code, design, and everything in between.',
+    label: { en: 'Projects', zh: '项目' },
+    title: { en: 'Projects', zh: '项目作品' },
+    description: {
+      en: 'Things I have built — code, design, and everything in between.',
+      zh: '我亲手做出来的东西——代码、设计，以及其间的全部过程。',
+    },
   },
   {
     id: 'activities',
-    label: 'Campus',
-    title: 'Campus',
-    description: 'Campus life, clubs, and events I took part in.',
+    label: { en: 'Campus', zh: '校园' },
+    title: { en: 'Campus', zh: '校园经历' },
+    description: {
+      en: 'Campus life, clubs, and events I took part in.',
+      zh: '我的校园生活、社团与参与过的活动。',
+    },
   },
   {
     id: 'learning',
-    label: 'Learning',
-    title: 'Learning',
-    description: 'What I am currently studying and my learning journey.',
+    label: { en: 'Learning', zh: '学习' },
+    title: { en: 'Learning', zh: '学习手账' },
+    description: {
+      en: 'What I am currently studying and my learning journey.',
+      zh: '我正在学习的内容，以及我的学习轨迹。',
+    },
   },
 ]
 
-interface WorkPageProps {
-  onBackHome: () => void
-}
-
-export default function WorkPage({ onBackHome }: WorkPageProps) {
+export default function WorkPage() {
+  const { lang, tx } = useLang()
   const [activeId, setActiveId] = useState<WorkSectionId>('about')
   const scrollRef = useRef<HTMLDivElement>(null)
   const sectionRefs = useRef<Record<WorkSectionId, HTMLElement | null>>({
@@ -143,46 +161,29 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
       {/* 顶部导航栏：固定在滚动容器外，页面滚动时始终在顶部保持可见 */}
       <header className="glass-bar fixed inset-x-0 top-0 z-50">
         <div className="flex h-16 items-center justify-between gap-4 px-5 md:px-10">
-          {/* 左侧：Home + 品牌名 */}
+          {/* 左侧：简历品牌（落地即简历页，无返回首页入口） */}
           <div className="flex shrink-0 items-center gap-3">
-            <button
-              onClick={onBackHome}
-              className="group inline-flex items-center gap-1.5 text-sm font-medium text-[#C9B48D] transition-colors duration-300 hover:text-[#F2E0B8]"
-            >
-              <span className="transition-transform duration-300 group-hover:-translate-x-0.5">
-                ←
-              </span>
-              Home
-            </button>
-            <span className="hidden h-4 w-px bg-[#C9A96E]/30 sm:block" />
-            <span className="hidden text-sm font-semibold tracking-wide text-[#F2E7CD] sm:block">
+            <span className="text-sm font-semibold tracking-wide text-[#F2E7CD]">
               Zhihan Zhang
             </span>
           </div>
 
           {/* 中间：6 个模块导航，绝对定位于视口正中央；最大宽度按左右两侧实际占用预留空间，永不重叠 */}
-          <nav className="no-scrollbar absolute left-1/2 top-0 flex h-16 max-w-[calc(100%-24rem)] -translate-x-1/2 items-center justify-center gap-0.5 overflow-x-auto md:gap-1 lg:max-w-[calc(100%-38rem)]">
+          <nav className="no-scrollbar absolute left-1/2 top-0 flex h-16 max-w-[calc(100%-28rem)] -translate-x-1/2 items-center justify-center gap-0.5 overflow-x-auto md:gap-1 lg:max-w-[calc(100%-43rem)]">
             {SECTIONS.map((s) => (
               <PillNavButton
                 key={s.id}
                 active={s.id === activeId}
                 onClick={() => scrollToSection(s.id)}
               >
-                {s.label}
+                {tx(s.label)}
               </PillNavButton>
             ))}
           </nav>
 
-          {/* 右侧：常驻联系入口（胶囊 + 一句真诚邀请），flex 流内右端对齐 */}
+          {/* 右侧：统一功能菜单（下载/管理/联系/语言/角色标识收拢于此） */}
           <div className="flex shrink-0 items-center gap-3">
-            <NavContactLinksRich />
-            {/* 一句克制的小字，真诚邀请联系 */}
-            <span className="hidden items-center gap-2.5 lg:flex">
-              <span className="h-3.5 w-px bg-[#C9A96E]/35" />
-              <span className="text-[13px] tracking-wide text-[#B7A581] md:text-[13.5px]">
-                Open to opportunities.
-              </span>
-            </span>
+            <NavMenu />
           </div>
         </div>
       </header>
@@ -195,7 +196,7 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
             <button
               key={s.id}
               onClick={() => scrollToSection(s.id)}
-              aria-label={s.label}
+              aria-label={tx(s.label)}
               className="group relative flex h-7 w-7 items-center justify-center"
             >
               <span
@@ -299,7 +300,9 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
 
               {isLast && (
                 <p className="section-enter mt-10 text-center text-xs text-[#8F7E63]" style={{ animationDelay: '0.24s' }}>
-                  © {year} Zhihan Zhang · Made with care
+                  {lang === 'zh'
+                    ? `© ${year} 张之涵 · 用心制作`
+                    : `© ${year} Zhihan Zhang · Made with care`}
                 </p>
               )}
             </div>
@@ -312,13 +315,13 @@ export default function WorkPage({ onBackHome }: WorkPageProps) {
       {/* 底部滚动提示：固定于视口底部，滚动时始终可见 */}
       <button
         onClick={scrollToNext}
-        aria-label="Scroll to next section"
+        aria-label={lang === 'zh' ? '滚动到下一板块' : 'Scroll to next section'}
         className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-all duration-500 ${
           isLastActive ? 'pointer-events-none opacity-0' : 'opacity-100'
         }`}
       >
         <span className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-[0.26em] text-[#B7A581]/80">
-          Scroll
+          {lang === 'zh' ? '向下滚动' : 'Scroll'}
           <svg
             width="16"
             height="16"

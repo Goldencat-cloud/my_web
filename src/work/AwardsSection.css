@@ -278,16 +278,17 @@
   }
 }
 
-/* 轨道：宽度自适应最长比赛名（全部卡片等宽、单行不换行），整体居中 */
+/* 轨道：卡片占满滚轮内容宽并保持等宽（每列 min-width:0，长文本不把卡片横向撑破），整体居中 */
 .wheel-track {
   list-style: none;
   margin: 0 auto;
   /* 循环模式：无需首尾留白，任何滚动位置都有内容 */
   padding: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* 关键：限制列宽，让卡片 ≤ 容器宽，防横向溢出 */
+  justify-items: stretch;
   gap: 30px; /* 卡片间距：拉开呼吸感 */
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
 }
 
 /* 行：固定高度参与吸附；卡片承接 3D 变换 */
@@ -462,7 +463,7 @@
 /* 行1：序号 + 比赛名称 */
 .ac-name {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   min-width: 0;
   font-size: 15px;
@@ -489,11 +490,15 @@
   background-clip: text;
   color: transparent;
 }
+/* 名称：放不下时最多折两行并省略号，避免长英文名横向撑破卡片被裁 */
 .ac-name-text {
   min-width: 0;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* 行2：荣誉胶囊 + 角色胶囊 + 职责 */

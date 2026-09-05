@@ -1,11 +1,50 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import WorkPage from './WorkPage'
+import LifePage from './LifePage'
 import SiteBackdrop from './Backdrop'
 import FlyingPet from './FlyingPet'
-import { NavContactLinksRich } from './ContactWidgets'
 import { EmbossDefs, VideoEffects, StarOrnaments } from './VideoEffects'
+import LangToggle from './i18n/LangToggle'
+import { useLang } from './i18n/LanguageContext'
+import type { Localized } from './i18n/types'
 
 const ROUGH_FILTER_ID = 'rough-paper'
+
+type RoutePath = '/' | '/work' | '/life'
+
+/**
+ * 站点落地策略：
+ *   简历页 /work 是唯一落地页。首页 '/' 与生活页 '/life' 的代码完整保留，
+ *   但任何访问（空 hash、#/、#/life、未知 hash）都会被自动送回 /work——
+ *   「看不到但没删」。未来想重新开放首页或生活页，只须让下方对相应 hash 返回其 route。
+ */
+function parseHashRoute(hash: string): RoutePath {
+  const cleaned = hash.replace(/^#/, '')
+  if (cleaned === '/work') return '/work'
+  // 非简历页一律落地到简历页
+  return '/work'
+}
+
+/** 简单 hash 路由：落地即简历页 /work */
+function useHashRoute() {
+  const [route, setRoute] = useState<RoutePath>(() => parseHashRoute(window.location.hash))
+
+  useEffect(() => {
+    // 初始规整：若当前不是 #/work，把地址统一到 #/work（会触发下方 hashchange）
+    const raw = window.location.hash.replace(/^#/, '')
+    if (raw !== '/work') window.location.hash = '#/work'
+
+    const handler = () => setRoute(parseHashRoute(window.location.hash))
+    window.addEventListener('hashchange', handler)
+    return () => window.removeEventListener('hashchange', handler)
+  }, [])
+
+  const navigate = useCallback((to: RoutePath) => {
+    window.location.hash = `#${to}`
+  }, [])
+
+  return { route, navigate }
+}
 
 function HandwritingText({
   text,
@@ -75,12 +114,22 @@ type DialogStep = 0 | 1 | 2
 
 // 两句对话牛皮纸高度都固定 75px，位置完全重合。
 // 第二句只拉长宽度，文本单行，在牛皮纸内水平垂直居中。
-const DIALOG_STEPS: { text: string; width: string; height: string }[] = [
-  { text: 'Welcome to my website.', width: '36cqw', height: '75px' },
-  { text: 'Which side of me would you like to explore?', width: '62cqw', height: '75px' },
+/* 译文底稿：MEMORY/resume-bilingual.md · 00 首页 */
+const DIALOG_STEPS: { text: Localized<string>; width: string; height: string }[] = [
+  {
+    text: { en: 'Welcome to my website.', zh: '欢迎来到我的网站。' },
+    width: '36cqw',
+    height: '75px',
+  },
+  {
+    text: { en: 'Which side of me would you like to explore?', zh: '你想了解我的哪一面？' },
+    width: '62cqw',
+    height: '75px',
+  },
 ]
 
 function InteractiveDialog({ onComplete }: { onComplete: () => void }) {
+  const { lang, tx } = useLang()
   const [step, setStep] = useState<DialogStep>(0)
   const [visible, setVisible] = useState(false)
 
@@ -105,7 +154,7 @@ function InteractiveDialog({ onComplete }: { onComplete: () => void }) {
     <button
       type="button"
       onClick={handleClick}
-      aria-label="Continue conversation"
+      aria-label={lang === 'zh' ? '继续对话' : 'Continue conversation'}
       className="absolute cursor-pointer"
       style={{
         top: '80%',
@@ -139,7 +188,7 @@ function InteractiveDialog({ onComplete }: { onComplete: () => void }) {
               'sepia(0.55) brightness(0.55) saturate(1.05) contrast(1.08) drop-shadow(0 4px 10px rgba(0,0,0,0.5))',
           }}
         />
-        <HandwritingText text={current.text} active fontSize="2.15cqw" />
+        <HandwritingText text={tx(current.text)} active fontSize="2.15cqw" />
         {/* 外层只负责定位（偏移不会被 bounce-y 动画覆盖） */}
         <span
           className="pointer-events-none absolute"
@@ -473,6 +522,7 @@ function DraggableBadge() {
 }
 
 function SideLettering() {
+  const { lang } = useLang()
   return (
     <div
       className="pointer-events-none absolute hidden select-none md:block"
@@ -490,13 +540,14 @@ function SideLettering() {
           textShadow: '0 0 12px rgba(226,190,120,0.25)',
         }}
       >
-        Work · Life · Growth
+        {lang === 'zh' ? '工作 · 生活 · 成长' : 'Work · Life · Growth'}
       </p>
     </div>
   )
 }
 
 function HeroTitle() {
+  const { lang } = useLang()
   return (
     <div
       className="pointer-events-none absolute inset-x-0 z-30 flex flex-col items-center text-center"
@@ -509,7 +560,7 @@ function HeroTitle() {
         className="home-fade-up whitespace-nowrap bg-gradient-to-br from-[#F2E0B8] via-[#E0C188] to-[#B8915A] bg-clip-text text-[clamp(28px,4.8vw,58px)] font-semibold leading-[1.05] text-transparent"
         style={{ animationDelay: '0.35s' }}
       >
-        Hi, I'm Zhihan
+        {lang === 'zh' ? '你好，我是之涵' : "Hi, I'm Zhihan"}
       </h1>
       <div
         className="home-fade-up mt-1.5 h-px w-14 rounded-full"
@@ -522,7 +573,9 @@ function HeroTitle() {
         className="home-fade-up mt-2 whitespace-nowrap text-[15px] text-[#C9B48D]"
         style={{ animationDelay: '0.7s' }}
       >
-        A curious soul collecting stories across work, life and growth.
+        {lang === 'zh'
+          ? '一个在 work、life 与 growth 之间收集故事的好奇灵魂。'
+          : 'A curious soul collecting stories across work, life and growth.'}
       </p>
     </div>
   )
@@ -552,6 +605,7 @@ function CurtainOverlay({ open }: { open: boolean }) {
 }
 
 function App() {
+  const { lang } = useLang()
   const videoRef = useRef<HTMLVideoElement>(null)
   // 视频自动恢复：浏览器会在切后台/省电模式、解码缓冲、StrictMode 双挂载等情况下
   // 让背景视频停播或卡住，这里监听相关事件并自动恢复播放，保证视频持续运转
@@ -630,44 +684,51 @@ function App() {
     }
   }, [])
 
+  const { route, navigate: navigateTo } = useHashRoute()
+
   const [showButtons, setShowButtons] = useState(false)
-  const [view, setView] = useState<'home' | 'work'>('home')
-  // 每次回到首页时 +1，作为交互对话的 key 强制重建，清除残留的对话框与按钮
   const [homeVisit, setHomeVisit] = useState(0)
-  // 门帘转场：多段金黑渐变竖帘逐条覆盖（最长 delay 0.175s + 段位移 0.28s ≈ 0.46s）
   const [curtainOpen, setCurtainOpen] = useState(false)
   const curtainTimer = useRef<number | null>(null)
 
-  const navigate = (to: 'home' | 'work') => {
-    if (to === view || curtainOpen) return
-    setCurtainOpen(true)
-    // 等竖帘全部覆盖到位后再切换视图
-    window.setTimeout(() => {
-      setView(to)
-    }, 460)
-    // 新页面短暂亮相后，竖帘逐条收走揭开
-    curtainTimer.current = window.setTimeout(() => {
-      setCurtainOpen(false)
-    }, 600)
-  }
+  const navigateWithCurtain = useCallback(
+    (to: RoutePath) => {
+      if (route === to || curtainOpen) return
+      setCurtainOpen(true)
+      window.setTimeout(() => { navigateTo(to) }, 460)
+      curtainTimer.current = window.setTimeout(() => { setCurtainOpen(false) }, 600)
+    },
+    [route, curtainOpen, navigateTo],
+  )
 
-  const goWork = () => navigate('work')
-
+  // 全站公开：首页 /、简历 /work、生活 /life，任何人无需凭证即可访问
+  const goWork = () => navigateWithCurtain('/work')
   const goHome = () => {
     setShowButtons(false)
     setHomeVisit((v) => v + 1)
-    navigate('home')
+    navigateWithCurtain('/')
   }
+  const goLife = () => navigateWithCurtain('/life')
 
-  if (view === 'work') {
+  if (route === '/work') {
     return (
       <>
         <CurtainOverlay open={curtainOpen} />
-        <WorkPage onBackHome={goHome} />
+        <WorkPage />
       </>
     )
   }
 
+  if (route === '/life') {
+    return (
+      <>
+        <CurtainOverlay open={curtainOpen} />
+        <LifePage onBackHome={goHome} />
+      </>
+    )
+  }
+
+  // ---- 首页 /：完整首页，任何人直接可见 ----
   return (
     <div
       className="fixed inset-0 overflow-hidden"
@@ -679,40 +740,33 @@ function App() {
       {/* SVG 浮雕滤镜定义（作用于视频） */}
       <EmbossDefs />
 
-      {/* 顶部品牌导航条：深色毛玻璃，与主体明显分层 */}
+      {/* 顶部品牌导航条：深色毛玻璃 */}
       <header
         className="glass-bar absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 py-4 md:px-10"
         style={{ fontFamily: "'Poppins', sans-serif" }}
       >
         <div className="flex items-baseline gap-2">
           <span className="text-base font-semibold text-[#F2E7CD]">
-            Zhihan Zhang
+            {lang === 'zh' ? '张之涵' : 'Zhihan Zhang'}
           </span>
           <span className="hidden text-[11px] uppercase tracking-[0.22em] text-[#C9B48D] sm:inline">
-            Personal Website
+            {lang === 'zh' ? '个人网站' : 'Personal Website'}
           </span>
         </div>
-        {/* 居中欢迎语：收进导航栏，释放正文空间 */}
         <span
           className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 text-[11px] uppercase tracking-[0.32em] text-[#C9B48D]/85 lg:block"
         >
-          Welcome to my corner of the internet
+          {lang === 'zh' ? '欢迎来到我在互联网上的一角' : 'Welcome to my corner of the internet'}
         </span>
         <div className="flex items-center gap-2.5">
-          {/* 常驻联系入口：与 Work 页一致的胶囊按钮，点击复制 */}
-          <NavContactLinksRich />
-          <span
-            className="rounded-full border border-[#C9A96E]/40 bg-[#241a10]/70 px-4 py-1.5 text-xs font-medium tracking-wide text-[#E9D5A8] backdrop-blur-md"
-          >
-            Home
-          </span>
+          <LangToggle />
         </div>
       </header>
 
       {/* 主标题 */}
       <HeroTitle />
 
-      {/* 中央视频卡片（悬浮立体） */}
+      {/* 中央视频卡片 */}
       <div
         className="video-wrap absolute"
         style={{
@@ -725,14 +779,8 @@ function App() {
           containerType: 'inline-size',
         }}
       >
-        {/* 离地椭圆投影 */}
         <div className="video-shadow" />
-
-        {/* 底部立体星星挂饰（帧外，与视频悬浮联动） */}
         <StarOrnaments />
-
-        {/* 会飞的小精灵 / IP 形象（围绕视频飞行，可与鼠标互动） */}
-        {/* 换上你的形象：把图片放到 public/ 后改 src，例如 src="/my-pet.png" */}
         <FlyingPet src="/pet.png" size={64} />
 
         <div
@@ -758,15 +806,9 @@ function App() {
             filter: 'url(#video-emboss) contrast(1.03) saturate(1.08) brightness(0.98)',
           }}
         />
-
-        {/* 顶部/底部细描边氛围条 */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/30 to-transparent" />
-
-        {/* 质感层：柔光 → 星空 → 划痕 → 胶片颗粒 */}
         <VideoEffects />
 
-        {/* 点击驱动的交互对话（key 变化时重建，回到初始状态） */}
-        {/* 按钮出现后对话框直接卸载，保证与两个牛皮纸按钮严格互斥，不会同时出现三个 */}
         {!showButtons && (
           <InteractiveDialog key={homeVisit} onComplete={() => setShowButtons(true)} />
         )}
@@ -783,33 +825,39 @@ function App() {
               gap: '7.4cqw',
             }}
           >
-            <PaperButton text="Life" onClick={() => {}} delay={0} fontSize="2.15cqw" />
-            <PaperButton text="Work" onClick={goWork} delay={200} fontSize="2.15cqw" />
+            <PaperButton
+              text={lang === 'zh' ? '生活' : 'Life'}
+              onClick={goLife}
+              delay={0}
+              fontSize="2.15cqw"
+            />
+            <PaperButton
+              text={lang === 'zh' ? '工作' : 'Work'}
+              onClick={goWork}
+              delay={200}
+              fontSize="2.15cqw"
+            />
           </div>
         )}
         </div>
 
-        {/* 吊牌 - 挂在视频顶边左缘，像星星一样在视频容器外可见（不受 overflow 裁剪），可任意方向拉伸 */}
         <DraggableBadge />
       </div>
 
-      {/* 装饰：竖排文字 / 贴纸 */}
-      <FloatingTag text="Handcrafted" position="top-right" rotate="-6deg" />
-      <FloatingTag text="Personal Portfolio" position="left-bottom" rotate="4deg" />
-      <FloatingTag text="Est. 2024" position="right-bottom" rotate="-5deg" />
+      <FloatingTag text={lang === 'zh' ? '手工打造' : 'Handcrafted'} position="top-right" rotate="-6deg" />
+      <FloatingTag text={lang === 'zh' ? '个人作品集' : 'Personal Portfolio'} position="left-bottom" rotate="4deg" />
+      <FloatingTag text={lang === 'zh' ? '始于 2024' : 'Est. 2024'} position="right-bottom" rotate="-5deg" />
       <SideLettering />
 
-      {/* 底部页脚 */}
       <footer
         className="absolute inset-x-0 bottom-0 z-30 flex items-center justify-center gap-2 pb-5 pt-2 text-[11px] uppercase tracking-[0.18em] text-[#8F7E63]"
         style={{ fontFamily: "'Poppins', sans-serif" }}
       >
         <span className="home-fade-up h-px w-10 bg-gradient-to-r from-transparent to-[#C9A96E]/40" style={{ animationDelay: '1s' }} />
-        <span className="home-fade-up" style={{ animationDelay: '1s' }}>
-          Scroll into my world
-        </span>
+        <span className="home-fade-up" style={{ animationDelay: '1s' }}>Scroll into my world</span>
         <span className="home-fade-up h-px w-10 bg-gradient-to-l from-transparent to-[#C9A96E]/40" style={{ animationDelay: '1s' }} />
       </footer>
+
     </div>
   )
 }

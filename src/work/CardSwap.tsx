@@ -2,6 +2,7 @@ import {
   Children,
   type CSSProperties,
   type ReactElement,
+  type Ref,
   cloneElement,
   forwardRef,
   isValidElement,
@@ -87,6 +88,7 @@ const CardSwap = ({
     const childEl = child as ReactElement<{
       style?: CSSProperties
       onClick?: () => void
+      ref?: Ref<HTMLDivElement>
     }>
     const childStyle = childEl.props.style ?? {}
     return cloneElement(childEl, {

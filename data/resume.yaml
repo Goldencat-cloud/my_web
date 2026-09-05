@@ -1,0 +1,771 @@
+meta:
+  version: v1
+  updatedAt: 2026-09-05
+  sourceLang: zh
+about:
+  header:
+    title:
+      en: Zhihan's Resume
+      zh: 之涵的简历
+    atmosphere:
+      en: Data Product · AI
+      zh: 数据产品 · AI
+  mbti: ENTP
+  personalityTags:
+    en: Proactive · Pragmatic · Results-driven
+    zh: 主动 · 务实 · 结果导向
+  bio:
+    en: >
+      Product-minded and value-driven, I draw on hands-on experience across the
+      data pipeline and AI modeling to turn every insight into a data product
+      the business can actually use.
+    zh: |
+      以产品思维驱动、以价值落地为准则。我依托数据全链路与 AI 建模的实战经验，把每一个洞察都变成业务真正用得起来的数据产品。
+  avatar:
+    src: /about-avatar.mp4
+    alt:
+      en: Zhihan Zhang
+      zh: 张之涵
+  education:
+    - time:
+        en: Sep 2022 – Jun 2026
+        zh: 2022.09 – 2026.06
+      school:
+        en: Shaanxi Normal University (211) · Big Data Management & Application
+        zh: 陕西师范大学（211）· 大数据管理与应用
+      degree:
+        en: B.M.
+        zh: 管理学学士
+      gpa: 3.84
+    - time:
+        en: Sep 2026 – Present
+        zh: 2026.09 – 至今
+      school:
+        en: Shaanxi Normal University (211) · Business Administration
+        zh: 陕西师范大学（211）· 工商管理
+      degree:
+        en: M.M.
+        zh: 管理学硕士
+      inProgress: true
+  courses:
+    title:
+      en: Core Courses
+      zh: 核心课程
+    items:
+      - name:
+          en: Statistics
+          zh: 统计学
+        score: 98
+      - name:
+          en: Big Data Technology
+          zh: 大数据技术
+        score: 96
+      - name:
+          en: MySQL
+          zh: MySQL
+        score: 96
+      - name:
+          en: Machine Learning
+          zh: 机器学习
+        score: 95
+      - name:
+          en: Data Mining
+          zh: 数据挖掘
+        score: 92
+      - name:
+          en: Python
+          zh: Python
+        score: 92
+      - name:
+          en: Text Mining
+          zh: 文本挖掘
+        score: 91
+internship:
+  header:
+    title:
+      en: Internship
+      zh: 实习经历
+    subtitle:
+      en: Work experience and the lessons I learned on the job.
+      zh: 工作经历，以及我在岗位上学到的东西。
+  company:
+    en: ByteDance
+    zh: 字节跳动
+  department:
+    en: Data Circulation Center (DCC)
+    zh: 数据循环中心（DCC）
+  role:
+    en: Data Operations - Project Management
+    zh: 数据运营 - 项目管理
+  period:
+    en: Oct 2025 — Mar 2026
+    zh: 2025.10 — 2026.03
+  acts:
+    - no: "01"
+      title:
+        en: Parallel Project Management
+        zh: 多线并行管理
+      body:
+        en: >
+          Led **6 AI data annotation projects** (assisting on **3 more**),
+          handling **~700K** data items across **10+** languages and multimodal
+          formats (text, video, images). Scenarios spanned **AIGC generation**
+          and **ad targeting driven by content understanding**, supporting model
+          training and business delivery.
+        zh: >
+          主导 **6 个** AI 数据标注项目（另辅助 **3 个**），累计处理 **约 70 万条** 数据条目，覆盖 **10+ 种语言**
+          及文本、视频、图片等多模态格式。项目场景涵盖 **AIGC 生成** 与 **基于内容理解的广告投放**，支撑多场景下的模型训练与业务落地。
+      stats:
+        - value: "6"
+          label:
+            en: Projects
+            zh: 在管项目
+        - value: ~700K
+          label:
+            en: Data items
+            zh: 数据条目
+        - value: 10+
+          label:
+            en: Languages
+            zh: 覆盖语言
+      short: Parallel
+      file: build_01.py
+    - no: "02"
+      title:
+        en: Process Standardization
+        zh: 流程标准化
+      body:
+        en: >
+          Aligned requirements with product and algorithm teams, breaking down
+          priorities. Designed **5 annotation SOPs**, **10+ templates** and **3
+          workflow types**, building a **reusable data production pipeline**.
+          Coordinated international annotation team resources to keep projects
+          running efficiently.
+        zh: >
+          与产品、算法团队对齐需求并拆解优先级。设计 **5 套标注 SOP**、**10+ 套标注模板** 与 **3 类工作流**，搭建起
+          **可复用的数据生产流程**。协调国际标注团队资源，保障项目高效推进。
+      stats:
+        - value: "5"
+          label:
+            en: Standard SOPs
+            zh: 标准作业流程
+        - value: 10+
+          label:
+            en: Templates
+            zh: 标注模板
+        - value: "3"
+          label:
+            en: Workflows
+            zh: 类工作流
+      short: Process
+      file: design_02.py
+    - no: "03"
+      title:
+        en: Schedule Risk Control
+        zh: 进度风控
+      body:
+        en: >
+          Built a progress dashboard on a **BI platform** to continuously track
+          task progress, with alerts and regular reviews for overdue and quality
+          risks. For any schedule deviation, adjusted resources and processes in
+          time to achieve a **95% on-time delivery rate**.
+        zh: >
+          在 **BI 平台** 上搭建进度看板，持续跟踪任务进度，对逾期与质量风险设置预警并定期排查。一旦出现进度偏离，及时调整资源与流程，最终达成
+          **95% 按期交付率**。
+      stats:
+        - value: 95%
+          label:
+            en: On-time delivery
+            zh: 按期交付率
+        - value: "2"
+          label:
+            en: Emergency fixes
+            zh: 次紧急修复
+      short: Schedule
+      file: track_03.py
+    - no: "04"
+      title:
+        en: Quality Closed Loop
+        zh: 质量闭环
+      body:
+        en: >
+          Built QA evaluation across **three levels** — annotation quality,
+          model effectiveness, and production readiness. By diagnosing **Bad
+          Cases** and feeding findings back to refine the annotation standard,
+          boosted data accuracy by **up to 15%** and model recall by **up to
+          5%**, keeping models stable in production and improving user
+          satisfaction.
+        zh: >
+          从 **三个层面** 建立质检评估——标注质量、模型效果、上线可用性。通过对 **Bad Case**
+          做拆解归因，并将结论反哺到标注标准迭代，推动数据准确率最大提升 **15%**、模型召回率最大提升
+          **5%**，保障模型上线稳定，用户满意度同步提升。
+      stats:
+        - value: +15%
+          label:
+            en: Data accuracy
+            zh: 数据准确率
+        - value: +5%
+          label:
+            en: Model recall
+            zh: 模型召回率
+      short: Quality
+      file: audit_04.py
+    - no: "05"
+      title:
+        en: Production Automation
+        zh: 生产自动化
+      body:
+        en: >
+          Built **ETL pipelines** using **SQL and Python on Hive**. On a
+          **low-code platform**, built **two agents** — an annotation agent to
+          pre-annotate rule-based items, and a QA agent to auto-sample, review,
+          and feed Bad Cases back into the standard. Completed **~50K
+          auto-annotations**, achieving **~90% QA accuracy** and scalable data
+          production.
+        zh: >
+          基于 **Hive 数仓**，用 **SQL 与 Python** 编写 **ETL 脚本** 完成数据抽取、清洗与加载。在
+          **低代码平台** 上搭建 **两个 Agent**——标注 Agent 对规则明确的条目做机器预标注，QA Agent 自动抽样质检、并将
+          Bad Case 回流至标注标准。累计完成 **约 5 万条** 自动标注，质检准确率约 **90%**，实现 **规模化数据生产**。
+      stats:
+        - value: ~50K
+          label:
+            en: Auto-annotated
+            zh: 自动标注量
+        - value: ~90%
+          label:
+            en: QA accuracy
+            zh: 质检准确率
+        - value: "2"
+          label:
+            en: Agents
+            zh: 个智能体
+      short: Auto
+      file: automate_05.py
+awards:
+  header:
+    title:
+      en: Awards
+      zh: 荣誉奖项
+    stats:
+      - value: "4"
+        label:
+          en: National
+          zh: 项国家级
+      - value: "4"
+        label:
+          en: Provincial
+          zh: 项省级
+      - value: Multiple
+        label:
+          en: University-Level Honors
+          zh: 多项校级荣誉
+  scholarships:
+    - label:
+        en: National Endeavor Scholarship
+        zh: 国家励志奖学金
+    - label:
+        en: University Third-Class Scholarship
+        zh: 校级三等奖学金
+  certificates:
+    - label:
+        en: Software Copyright · First Author
+        zh: 软件著作权 · 第一著作人
+    - label:
+        en: Datawhale Teaching Assistant
+        zh: Datawhale 优秀助教
+      full:
+        en: Datawhale stable diffusion model application outstanding teaching assistant
+          certificate
+        zh: Datawhale stable diffusion 模型应用优秀助教证书
+    - label:
+        en: Inspur Big Data Training
+        zh: 浪潮集团大数据岗前培训
+    - label:
+        en: Gaotu Dream Mentor
+        zh: 高途梦想导师
+  languages:
+    - label:
+        en: CET-6 · 529
+        zh: CET-6 · 529 分
+    - label:
+        en: Mandarin Proficiency (2A)
+        zh: 普通话二级甲等
+  items:
+    - level: national
+      name:
+        en: First National Artificial Intelligence Application Innovation Competition
+        zh: 第一届全国人工智能应用创新大赛
+      tier:
+        en: National Grand Prize
+        zh: 国家级特等奖
+      role:
+        en: Team Lead
+        zh: 队长
+      duty:
+        en: Core data analysis; built AI agents (workflows & knowledge base).
+        zh: 负责核心数据分析，智能体搭建（工作流与知识库）模块。
+    - level: national
+      name:
+        en: National College E-commerce "Innovation, Creativity & Entrepreneurship"
+          Challenge
+        zh: 全国大学生电子商务"创新、创意及创业"挑战赛 · 商务大数据分析实战赛道
+      tier:
+        en: National First Prize
+        zh: 国家级一等奖
+      role:
+        en: Team Lead
+        zh: 队长
+      duty:
+        en: Responsible for end-to-end organization, decision-making, and execution from
+          project ideation to launch — a full 0-to-1 journey — with a core focus
+          on problem modeling and code implementation.
+        zh: 负责从项目选题到项目落地，从 0 到 1 的全流程组织、决策、和执行，核心负责问题建模和代码实现。
+    - level: national
+      name:
+        en: College Students Innovation & Entrepreneurship Training Program ·
+          Entrepreneurship
+        zh: 大学生创新创业训练计划 · 创业训练项目
+      tier:
+        en: National Project
+        zh: 国家级立项
+      role:
+        en: —
+        zh: —
+      duty:
+        en: Financial analysis module.
+        zh: 负责财务分析模块。
+    - level: provincial
+      name:
+        en: Contemporary Undergraduate Mathematical Contest in Modeling (CUMCM)
+        zh: 高教社杯全国大学生数学建模竞赛（CUMCM）
+      tier:
+        en: Provincial Second Prize
+        zh: 省级二等奖
+      role:
+        en: Team Lead
+        zh: 队长
+      duty:
+        en: Lead programmer — mathematical modeling & implementation.
+        zh: 担任比赛编程手，负责问题建模与编程实现。
+    - level: provincial
+      name:
+        en: College Students Innovation & Entrepreneurship Training Program · Innovation
+        zh: 大学生创新创业训练计划 · 创新训练项目
+      tier:
+        en: Provincial Project
+        zh: 省级立项
+      role:
+        en: Team Lead
+        zh: 队长
+      duty:
+        en: Data analysis module; authored the core of the academic paper.
+        zh: 负责数据分析模块，并撰写学术论文的核心部分。
+    - level: provincial
+      name:
+        en: "\"Challenge Cup\" China College Students' Entrepreneurship Competition"
+        zh: '"挑战杯"中国大学生创业计划竞赛'
+      tier:
+        en: Provincial Silver
+        zh: 省级银奖
+      role:
+        en: Core Member
+        zh: 核心成员
+      duty:
+        en: Market analysis (forecasting, competitor & marketing research) and final
+          defense.
+        zh: 负责市场分析（规模预测、竞品分析、营销方案）模块与答辩。
+    - level: provincial
+      name:
+        en: The Chinese Mathematics Competitions for College Students (CMC)
+        zh: 中国大学生数学竞赛（CMC）
+      tier:
+        en: Provincial Third Prize
+        zh: 省级三等奖
+      role:
+        en: —
+        zh: —
+      duty:
+        en: Individual competition.
+        zh: 个人比赛，无分工。
+projects:
+  - id: stock-sentiment
+    no: "01"
+    tab:
+      en: LLM Fine-Tuning
+      zh: 大模型微调
+    title:
+      en: Chinese Stock-Comment Sentiment Recognition with Qwen-4B & LoRA
+      zh: 基于 Qwen-4B 与 LoRA 微调的中文股票评论情感识别研究
+    subtitle:
+      en: Outstanding Graduation Project
+      zh: 优秀毕业设计
+    time:
+      en: Mar 2026 – Apr 2026
+      zh: 2026.03 – 2026.04
+    role:
+      en: Project Lead
+      zh: 项目负责人
+    tech:
+      - en: Qwen-4B
+        zh: Qwen-4B
+      - en: LoRA
+        zh: LoRA
+      - en: Text Mining
+        zh: 文本挖掘
+      - en: PCA
+        zh: PCA
+    stages:
+      - key: problem
+        label:
+          en: Problem
+          zh: 问题
+        body:
+          en: >
+            Social-media stock comments suffer from short texts, implicit
+            expressions, and mixed jargon, severely limiting sentiment
+            recognition and creating a "breakpoint" from text to signal that
+            struggles to serve quantitative investing.
+          zh: |
+            社交媒体股票评论存在短文本、隐晦表达、专业术语混杂等问题，严重制约情感识别的有效性，成为从文本到信号的"断点"，难以服务于量化投资。
+      - key: data
+        label:
+          en: Data
+          zh: 数据
+        body:
+          en: >
+            Integrated Tianchi labeled data, East Money Guba scraped data (~218K
+            comments), and SSE 50 historical market data.
+          zh: |
+            整合天池标注数据、东方财富股吧爬取数据（约 21.8 万条评论）及上证 50 历史行情数据。
+      - key: solution
+        label:
+          en: Solution
+          zh: 方案
+        body:
+          en: >
+            Built a six-stage progressive comparison framework from traditional
+            to pretrained to Qwen-4B LLMs, using Macro-F1 as the core metric to
+            systematically evaluate cross-generation performance; applied LoRA
+            fine-tuning for targeted optimization. The best model reached
+            Macro-F1 0.86, +11.7% over BERT (0.77), and 0.81 even zero-shot —
+            validating efficiency and generalizability.
+          zh: >
+            构建从传统模型到预训练模型、再到 Qwen-4B 大模型的六阶段递进式对比框架，以 Macro-F1
+            为核心指标系统性评估不同代际技术的性能；并通过 LoRA 微调实现定向优化。最优模型 Macro-F1 达 0.86，较
+            BERT（0.77）提升 11.7%，零样本下亦达 0.81，验证了模型的高效性与泛化能力。
+      - key: validation
+        label:
+          en: Quant Validation
+          zh: 量化验证
+        body:
+          en: >
+            Using the best model to predict SSE 50 comment sentiment for
+            2024–2025, constructed 20+ proxy variables and synthesized a
+            sentiment factor via PCA. Finding: sentiment volatility correlates
+            with ATR_pct at -0.89, and the put/call ratio leads volatility by 2
+            months (r=0.81) — confirming the strong correlation and lead
+            relationship between sentiment signals and market volatility.
+          zh: >
+            基于最优模型预测 2024–2025 年上证 50 评论情感，构建情绪强度、分歧度等 20 余个代理变量，并利用 PCA
+            合成情绪因子。分析发现：情绪波动率与 ATR_pct 相关系数为 -0.89，认沽认购比率领先波动率 2 个月（相关系数
+            0.81），验证了情绪信号与市场波动之间的强相关性及领先关系。
+    year: "2026"
+    honor:
+      en: Outstanding Graduation Project
+      zh: 优秀毕业设计
+  - id: hangzhou-traffic
+    no: "02"
+    tab:
+      en: AI Agent Design
+      zh: AI 智能体设计
+    title:
+      en: Hangzhou Traffic Optimization AI Agent
+      zh: 杭州市交通优化方案设计 AI 智能体项目
+    subtitle:
+      en: National Grand Prize
+      zh: 国家级特等奖
+    time:
+      en: Apr 2025 – May 2025
+      zh: 2025.04 – 2025.05
+    role:
+      en: Project Lead
+      zh: 项目负责人
+    tech:
+      - en: GIS Analysis
+        zh: GIS 空间分析
+      - en: LDA
+        zh: LDA
+      - en: AI Agent
+        zh: AI 智能体
+      - en: Visualization
+        zh: 可视化
+    stages:
+      - key: problem
+        label:
+          en: Problem
+          zh: 问题
+        body:
+          en: >
+            As a pioneer in digital governance, Hangzhou has built a traffic
+            platform, yet weekday rush-hour congestion index often exceeds 2.5,
+            parking gap reaches 35%, and public transit faces >120% peak load
+            and unreasonable intervals — traditional management is trapped in
+            being "data-rich but insight-poor."
+          zh: >
+            杭州作为数字化治理先行城市，虽已搭建交通治理平台，但工作日早晚高峰拥堵指数常超 2.5，停车位缺口达
+            35%，公共交通也存在高峰满载率超过 120%、发车间隔不合理等问题，传统管理手段陷入"数据过载却洞察不足"的困境。
+      - key: data
+        label:
+          en: Data
+          zh: 数据
+        body:
+          en: >
+            Collected 326K+ records of Hangzhou traffic congestion, accidents,
+            and flow; scraped Zhihu and surveyed 2,000+ citizen-feedback
+            entries; collected Hangzhou POI geo-data.
+          zh: >
+            采集 32.6 万+ 条杭州市交通拥堵、事故、流量数据；爬取知乎并发放问卷获取 2000+ 条市民反馈数据；采集杭州市 POI
+            地理信息数据。
+      - key: analysis
+        label:
+          en: Analysis
+          zh: 分析
+        body:
+          en: >
+            Used GIS spatial analysis to identify congestion/accident hotspots
+            and extract spatiotemporal features; LDA to identify citizens' core
+            needs; sentiment analysis to extract emotional features from citizen
+            text.
+          zh: >
+            采用 GIS 空间分析识别交通拥堵与事故热点区域，提取时间与空间特征；采用 LDA
+            模型识别市民反馈的核心需求；采用情感分析方法提取市民文本的情感特征。
+      - key: solution
+        label:
+          en: Solution
+          zh: 方案
+        body:
+          en: >
+            Wrote LLM prompts to convert findings into 100+ dialogue-flow
+            datasets, built a status-assessment knowledge base and workflow,
+            optimized component config, and tuned model performance from
+            feedback.
+          zh: >
+            撰写大模型 prompt，将分析结论转换为 100+
+            条对话流数据集，搭建现状评估知识库与工作流，优化组件配置，并根据用户反馈对模型性能进行调优。
+      - key: result
+        label:
+          en: Result
+          zh: 成果
+        body:
+          en: >
+            From historical traffic and complaint-text analysis, the AI agent
+            identified 3 typical congestion patterns via spatiotemporal
+            extraction; the plan projects +22.3% morning-peak efficiency and
+            quantifies citizens' core demands via LDA. Drew 15+ charts to
+            visualize conclusions (congestion geo-heatmap,
+            congestion-index-over-time trends, etc.).
+          zh: >
+            基于杭州市交通的历史路况数据与市民投诉文本分析，AI 智能体通过时空特征提取成功识别出 3
+            类典型拥堵模式，方案预期实现早高峰通行效率提升 22.3%，并依据 LDA 主题模型量化出市民核心诉求；绘制 15 张+
+            可视化图形直观展示分析结论（拥堵地理热点图、拥堵指数随时间变化趋势图等）。
+    year: "2025"
+    honor:
+      en: National Grand Prize
+      zh: 国家级特等奖
+  - id: autoprice
+    no: "03"
+    tab:
+      en: Predictive Modeling
+      zh: 预测建模
+    title:
+      en: AutoPrice · Used-Car Price Prediction
+      zh: AutoPrice · 二手车价格预测项目
+    subtitle:
+      en: National First Prize
+      zh: 国家级一等奖
+    time:
+      en: Nov 2024 – Jul 2025
+      zh: 2024.11 – 2025.07
+    role:
+      en: Project Lead
+      zh: 项目负责人
+    tech:
+      - en: LightGBM
+        zh: LightGBM
+      - en: Optuna
+        zh: Optuna
+      - en: Feature Engineering
+        zh: 特征工程
+      - en: Regression
+        zh: 回归预测
+    stages:
+      - key: problem
+        label:
+          en: Problem
+          zh: 问题
+        body:
+          en: >
+            Traditional manual used-car appraisal averages 12% error — 67% of
+            dealers lose >¥80K/month from mispricing, and buyers' decision time
+            stretches from 7 to 21 days. A data-driven precise pricing model is
+            urgently needed.
+          zh: >
+            传统二手车人工评估模式平均误差可达车价的 12%——一方面 67% 的车商因定价偏差月均亏损超过 8
+            万元，另一方面消费者的平均购车决策时间从 7 天延长至 21 天。因此，亟需构建数据驱动的精准二手车价格预测模型。
+      - key: data
+        label:
+          en: Data & Features
+          zh: 数据与特征
+        body:
+          en: >
+            Collected 150K+ used-car records; mode imputation for categorical
+            missing values, truncation for outliers, Z-score standardization and
+            log transform on target to improve quality. Built 28 new features
+            via 5 methods (time deltas, binning, cross features) to capture
+            trends, nonlinearity, categorical info; then variance filtering,
+            correlation analysis, Lasso (linear dim reduction) and Random Forest
+            (nonlinear contribution) kept 14 key features.
+          zh: >
+            采集 15 万+ 条二手车数据；对分类型缺失值做众数填充，对异常值做截断修正，并使用 Z-score
+            标准化与目标列对数变换提升数据质量。通过时间差值、分箱、交叉等 5 种方法构造 28
+            个新特征，以捕捉时序趋势、非线性关系及类别信息；再结合方差筛选、相关性分析、Lasso（线性降维）与随机森林（非线性贡献评估），最终保留
+            14 个关键特征。
+      - key: exploration
+        label:
+          en: Exploration
+          zh: 数据探索
+        body:
+          en: >
+            Drew 6 charts analyzing price drivers, brand retention, and regional
+            traits; parsed how base attributes relate to price and how
+            brand/region/age affect value.
+          zh: |
+            绘制 6 张图表分析二手车市场价格影响因素、品牌保值率及区域特征，解析基础属性与价格的关联，以及品牌、区域、车龄对价值的影响。
+      - key: solution
+        label:
+          en: Solution
+          zh: 方案
+        body:
+          en: >
+            Compared Linear Regression, DNN, ExtraTrees, and LightGBM; used
+            Optuna Bayesian optimization + cross-validation for best params;
+            deeper analysis on predictive performance, generalization, and key
+            factors.
+          zh: >
+            研究对比线性回归、DNN、极端随机树与 LightGBM 模型，并结合 Optuna
+            贝叶斯优化策略与交叉验证方法获取模型最优参数组合，进一步从预测性能、泛化能力、关键因素三方面进行深入分析。
+      - key: deployment
+        label:
+          en: Deployment
+          zh: 部署
+        body:
+          en: >
+            Designed 6 mini-program UI pages, built a working used-car pricing
+            mini-program prototype, interviewed 1 used-car company, and signed 2
+            long-term LOIs with 2 Xi'an used-car companies.
+          zh: >
+            设计 6 个小程序 UI 页面，完成二手车价格预测小程序样品；对 1 家二手车公司进行访谈，与西安 2 家二手车公司签订 2
+            份长期合作意向协议。
+      - key: result
+        label:
+          en: Result
+          zh: 成果
+        body:
+          en: >
+            Delivered a 30K+-word report; LightGBM excelled — test MSE 0.0551,
+            RMSE 0.2347, MAE 0.1233, MAPE 1.65%, R² 0.963; MAPE shows 3–6×
+            better pricing accuracy vs industry average, with train/test error
+            converging by 1,000 epochs and a stable learning curve (no overfit),
+            proving robustness.
+          zh: >
+            完成 3 万+ 字论文报告；LightGBM 模型预测精度显著优秀，测试集上 MSE 为 0.0551、RMSE 为
+            0.2347、MAE 为 0.1233、MAPE 为 1.65%、决定系数达 0.963；其中 MAPE 指标显示定价精度较行业平均提升
+            3–6 倍，且训练集与测试集误差差异在 1000 轮迭代时趋近于 0、学习曲线平稳，未过拟合，证明其稳健性优异。
+    year: "2024"
+    honor:
+      en: National First Prize
+      zh: 国家级一等奖
+campus:
+  header:
+    title:
+      en: Campus
+      zh: 校园经历
+    subtitle:
+      en: Roles, research, and on-campus service
+      zh: 角色、科研与校园服务
+  roles:
+    - idx: "01"
+      title:
+        en: Research Assistant
+        zh: 副研究员助理
+      org:
+        en: International Business School, Shaanxi Normal University
+        zh: 陕西师范大学 国际商学院
+      time:
+        en: Nov 2024 – Feb 2025
+        zh: 2024.11 – 2025.02
+      duties:
+        - en: Sourced literature and compiled research data — e.g., livestock,
+            agricultural income, and agricultural GHG-emission indicators for
+            developing and developed countries.
+          zh: 通过查找文献整理研究数据，例如发展中国家与发达国家的畜牧业、农业收入、农业温室气体排放等指标。
+        - en: Used pandas/numpy aggregation to compute the fields needed for total
+            indicators; matplotlib for visualization.
+          zh: 利用 pandas / numpy 做聚合分析、计算汇总指标所需的字段；利用 matplotlib 绘制可视化图表。
+      chips:
+        - en: pandas
+          zh: pandas
+        - en: numpy
+          zh: numpy
+        - en: matplotlib
+          zh: matplotlib
+    - idx: "02"
+      title:
+        en: Core Member
+        zh: 核心部员
+      org:
+        en: Innovation & Entrepreneurship Association Office
+        zh: 创新创业协会办公室
+      time:
+        en: Sep 2022 – Jun 2024
+        zh: 2022.09 – 2024.06
+      duties:
+        - en: Produced posters and edited videos; won a micro-lecture contest during this
+            period, improving the outreach of campus cultural events.
+          zh: 负责制作海报、剪辑视频等宣传物料，期间参加微团课大赛并获奖，提升了校园文化活动的宣传效果。
+        - en: As a core member prepared the university-level "Maker Cup," coordinating
+            logistics from call-for-entries to the final pitch.
+          zh: 作为核心成员参与筹办校级"创客杯"大赛，主导策划流程、撰写策划书。
+        - en: Coordinated personnel across multiple departments, gathered contestants,
+            judges, and volunteers, clarified role assignments, and attracted
+            30+ teams to the competition.
+          zh: 协调各方人员、跨部门沟通协作，召集参赛选手、评委、志愿者等，明确职责分工，吸引 30+ 支队伍参与比赛。
+      chips:
+        - en: Poster Design
+          zh: 海报设计
+        - en: Video Editing
+          zh: 视频剪辑
+        - en: Event Planning
+          zh: 活动策划
+        - en: Team Coordination
+          zh: 团队协调
+  volunteer:
+    value: "250"
+    unit:
+      en: h+
+      zh: 小时+
+    label:
+      en: On-Campus Volunteer Service
+      zh: 校内志愿服务时长
+  stamp:
+    org: SNNU IBS
+    year: "2026"
+    emblem: /snnu-8.png
+learning:
+  header:
+    title:
+      en: Learning
+      zh: 学习手账
+    subtitle:
+      en: What I am currently studying and my learning journey.
+      zh: 我正在学习的内容，以及我的学习轨迹。

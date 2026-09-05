@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; }
+/* 中文字体栈插在 system-ui 之前：Poppins 无 CJK 字形，
+   不补会导致中文回退到不确定的系统字体、字形与英文不统一。
+   英文字符仍走 Poppins（前面的字体缺字时逐字回退）。 */
+body {
+  overscroll-behavior: none;
+  font-family: "Poppins", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+}
+
 @keyframes swing {
   0%, 100% { transform: rotate(-3deg); }
   50% { transform: rotate(3deg); }
@@ -119,6 +128,18 @@
 
 /* ===== 内容区联系方式卡片：可点击信息行 ===== */
 /* ===== Work 页导航联系胶囊：醒目渐变 + 金边 + 内嵌图标圆 ===== */
+/* ===== NavMenu 下拉面板弹入动画（配合 NavMenu.tsx 内联 animation 使用） ===== */
+@keyframes nav-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .nav-contact-chip {
   display: inline-flex;
   align-items: center;
@@ -1699,23 +1720,28 @@
 }
 /* 前置序号：档案目录语感（当前是第 2 个模块） */
 
-/* ===== Core Courses 横向滚动（保险的原生滚动方式） ===== */
-/* 滚动容器：原生横向滚动（浏览器处理渲染，绝不裁剪文字），隐藏滚动条 */
+/* ===== Core Courses 横向滚动（无缝 marquee） ===== */
+/* 滚动视口：裁掉超出可视区的轨道，轨道自身用 translate3d 平移实现无缝循环 */
 .course-scroller {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .course-scroller::-webkit-scrollbar {
   display: none;
 }
-/* 轨道不换行、内容自适应宽度，超宽则横向滚动 */
+/* 轨道不换行、内容自适应宽度；两份副本撑开成 2 倍宽 */
 .course-track {
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
   width: max-content;
+}
+/* 每份副本内部保持等宽间距，副本之间由父级 gap 衔接（间距完全一致） */
+.course-copy {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
 }
 /* ===== Core Courses 分数数字：hover 金色发光 ===== */
 .score-num {
@@ -2038,4 +2064,30 @@
   40%  { transform: scale(1.7); opacity: 1; }
   65%  { transform: scale(0.9); }
   100% { transform: scale(1); opacity: 0.95; }
+}
+
+/* 富文本标记样式 */
+.rt-bold {
+  font-weight: 600;
+  color: #E9D5A8;
+}
+.rt-gold {
+  font-weight: 700;
+  background: linear-gradient(to bottom, #E9D5A8, #C9A96E);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.rt-highlight {
+  background: rgba(201, 169, 110, 0.25);
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+}
+.rt-underline {
+  border-bottom: 1px dashed #E9D5A8;
+  cursor: help;
+}
+.uncertain-term {
+  border-bottom: 1px dashed #E9D5A8;
+  cursor: help;
 }

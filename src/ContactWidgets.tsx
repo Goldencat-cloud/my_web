@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-const EMAIL = '15029026223@139.com'
-const PHONE = '15029026223'
+export const EMAIL = '15029026223@139.com'
+export const PHONE = '15029026223'
 
 export function MailIcon() {
   return (
@@ -40,7 +40,7 @@ export function PhoneIcon() {
   )
 }
 
-function CheckIcon() {
+export function CheckIcon() {
   return (
     <svg
       width="14"
@@ -59,7 +59,7 @@ function CheckIcon() {
 }
 
 /** 复制任意文本到剪贴板（含旧浏览器 fallback），返回 copied 状态供按钮反馈 */
-function useCopyText(text: string) {
+export function useCopyText(text: string) {
   const [copied, setCopied] = useState(false)
   const timer = useRef<number | null>(null)
 

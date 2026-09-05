@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { Handwriting } from './Handmade'
+import { useLang } from '../i18n/LanguageContext'
+import type { Localized } from '../i18n/types'
 import './SectionHeader.css'
 
 /* =========================================================
@@ -25,10 +27,11 @@ export default function SectionHeader({
 }: {
   /** 双位页码：01–06 */
   index: string
-  /** 书法体板块标题；不传则只渲染编号（如 About 的签名页） */
-  title?: string
-  /** 一句话副标题（sentence case 手账体） */
-  subtitle?: string
+  /** 书法体板块标题；不传则只渲染编号（如 About 的签名页）。
+   *  传 string = 两语言共用；传 { en, zh } = 双语（zh 缺失自动回退 en） */
+  title?: Localized<string>
+  /** 一句话副标题（sentence case 手账体）；同样支持双语值 */
+  subtitle?: Localized<string>
   /** 标题下的自定义信息行（如 Awards 的统计行） */
   meta?: ReactNode
   active?: boolean
@@ -40,6 +43,11 @@ export default function SectionHeader({
   /** 各页微调落位（如 About 只有编号、不需要头部下间距） */
   style?: CSSProperties
 }) {
+  const { tx } = useLang()
+  /* 先判空再取值，避免把 undefined 喂给泛型 tx 造成推断歧义 */
+  const heading = title === undefined ? undefined : tx(title)
+  const sub = subtitle === undefined ? undefined : tx(subtitle)
+
   return (
     <header className={`sec-head ${className}`.trim()} style={style}>
       {/* 编号 eyebrow：金线 + 页码 + 署名，全站同一枚「装订标记」 */}
@@ -51,15 +59,15 @@ export default function SectionHeader({
         <span className="sec-eyebrow-line sec-eyebrow-line--r" aria-hidden="true" />
       </div>
 
-      {title && (
+      {heading && (
         <h2 className={`sec-title ${titleClassName}`.trim()}>
           <Handwriting active={active} fontSize={size}>
-            {title}
+            {heading}
           </Handwriting>
         </h2>
       )}
 
-      {subtitle && <p className="sec-subtitle">{subtitle}</p>}
+      {sub && <p className="sec-subtitle">{sub}</p>}
       {meta && <div className="sec-meta">{meta}</div>}
     </header>
   )
